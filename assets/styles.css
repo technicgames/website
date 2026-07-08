@@ -1,0 +1,972 @@
+/* =============================================================
+   Technic Games — shared styles
+   Mobile-first. One stylesheet for all three pages.
+
+   Layout note: EVERY transition/animation lives in the "Motion"
+   section at the bottom, inside a single
+   @media (prefers-reduced-motion: no-preference) block. Nothing
+   above that section moves. Keep it that way — it makes the
+   reduced-motion guarantee checkable with a grep.
+   ============================================================= */
+
+/* ---------- Tokens ---------- */
+:root {
+  --ink: #3a2a3f;
+  --muted: #6b5a70;          /* 5.9:1 on paper */
+  --paper: #fcf9f4;
+  --paper-2: #f5efe7;
+  --paper-3: #ece2d6;
+  --card: #ffffff;
+  --line: #e8dfd6;
+
+  --berry: #f0476b;          /* display / decorative accent */
+  --berry-700: #ce2450;      /* interactive: 4.9:1 on paper, 5.3:1 on white */
+  --berry-800: #bd1f49;
+  --berry-900: #a81c40;      /* button "juice" shadow */
+  --green: #4fae3e;
+  --green-800: #2f6f26;      /* "Out now" tag text */
+  --orange: #ff8a3d;
+  --grape: #8e4fc4;
+  --lemon: #f6c445;
+
+  /* fruit tiers, ascending: cherry -> strawberry -> orange -> lemon -> lime -> grape -> watermelon */
+  --t1: #dc3557;
+  --t2: #f0476b;
+  --t3: #ff8a3d;
+  --t4: #f6c445;
+  --t5: #4fae3e;
+  --t6: #8e4fc4;
+  --t7: radial-gradient(circle at 50% 50%, var(--t2) 0 54%, var(--paper) 54% 64%, var(--t5) 64% 100%);
+
+  --tier-sweep: linear-gradient(90deg,
+    var(--t1) 0%, var(--t2) 18%, var(--t3) 36%,
+    var(--t4) 54%, var(--t5) 74%, var(--t6) 100%);
+
+  --wrap: 1120px;
+  --gutter: 20px;
+  --radius: 16px;
+  --radius-lg: 28px;
+  --pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(58, 42, 63, 0.05), 0 2px 8px rgba(58, 42, 63, 0.05);
+  --shadow-md: 0 2px 4px rgba(58, 42, 63, 0.05), 0 14px 32px rgba(58, 42, 63, 0.1);
+  --shadow-lg: 0 4px 10px rgba(58, 42, 63, 0.07), 0 26px 64px rgba(58, 42, 63, 0.16);
+
+  --dur-1: 140ms;
+  --dur-2: 260ms;
+  --dur-3: 560ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --font-display: "Fredoka", ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Screenshot aspect ratio — matches the 1284x2778 source images.
+     Change this one value if you swap in screenshots of another size.
+     (object-fit is `contain`, so a mismatch letterboxes; it never crops.) */
+  --shot-ratio: 1284 / 2778;
+
+  color-scheme: light;
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+body,
+h1, h2, h3, p, ul, ol, figure, dl, dd { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 88px;
+}
+
+[hidden] { display: none !important; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+
+  /* Sticky footer: keeps short pages (support, privacy) from
+     leaving a bare strip of paper below the footer on tall screens. */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1 0 auto; }
+
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+
+a { color: var(--berry-700); }
+
+button { font: inherit; color: inherit; }
+
+::selection { background: rgba(240, 71, 107, 0.2); color: var(--ink); }
+
+/* ---------- Focus ---------- */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.site-footer :where(a, button):focus-visible,
+.lightbox :where(a, button):focus-visible { outline-color: var(--paper); }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px; top: -100px;
+  z-index: 100;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 18px;
+  border-radius: 0 0 12px 12px;
+  text-decoration: none;
+  font-weight: 600;
+}
+.skip-link:focus { top: 0; }
+
+/* ---------- Layout ---------- */
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+section[id] { scroll-margin-top: 84px; }
+
+.section { padding-block: 56px; }
+
+@media (min-width: 760px) {
+  .section { padding-block: 92px; }
+}
+
+/* ---------- Type ---------- */
+h1, h2, h3, .btn, .tag, .logo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: clamp(2.25rem, 7vw, 4rem); }
+h2 { font-size: clamp(1.75rem, 4.4vw, 2.6rem); }
+h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--berry-700);
+}
+
+.lede {
+  font-size: clamp(1.0625rem, 2vw, 1.25rem);
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.prose { margin-top: 18px; }
+.prose p { margin-top: 1rem; max-width: 68ch; color: var(--muted); }
+.prose p:first-child { margin-top: 0; }
+
+/* Section heading with a short tier underline. */
+.section > .wrap > h2 { position: relative; padding-bottom: 18px; }
+.section > .wrap > h2::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 68px; height: 4px;
+  border-radius: var(--pill);
+  background: var(--tier-sweep);
+}
+
+/* ---------- Fruit-tier motif ---------- */
+.tier-rail {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 9px;
+  list-style: none;
+  padding: 0;
+}
+.tier-rail i { display: block; border-radius: 50%; }
+.tier-rail i:nth-child(1) { width:  6px; height:  6px; background: var(--t1); }
+.tier-rail i:nth-child(2) { width:  8px; height:  8px; background: var(--t2); }
+.tier-rail i:nth-child(3) { width: 11px; height: 11px; background: var(--t3); }
+.tier-rail i:nth-child(4) { width: 14px; height: 14px; background: var(--t4); }
+.tier-rail i:nth-child(5) { width: 17px; height: 17px; background: var(--t5); }
+.tier-rail i:nth-child(6) { width: 20px; height: 20px; background: var(--t6); }
+.tier-rail i:nth-child(7) { width: 24px; height: 24px; background: var(--t7); }
+
+.divider {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.divider::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--line);
+}
+.divider .tier-rail {
+  position: relative;
+  background: var(--paper);
+  padding-inline: 18px;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(252, 249, 244, 0.82);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid transparent;
+}
+.site-header.is-scrolled {
+  background: rgba(252, 249, 244, 0.94);
+  border-bottom-color: var(--line);
+  box-shadow: 0 8px 28px rgba(58, 42, 63, 0.07);
+}
+
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 66px;
+}
+
+.logo { display: inline-flex; align-items: center; }
+.logo img { height: 30px; width: auto; }
+
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: var(--pill);
+  padding: 8px 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+.nav-toggle:hover { border-color: var(--berry); color: var(--berry-700); }
+
+.nav-toggle__bars { display: grid; gap: 3px; }
+.nav-toggle__bars span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+/* hamburger -> X */
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+.nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 6px;
+}
+.nav a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  border-radius: var(--pill);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 500;
+}
+.nav a:hover { background: var(--paper-2); color: var(--berry-700); }
+
+/* current section / page.
+   berry-700 on this tint measures 4.49:1 — a hair under AA. The tint darkens
+   the paper just enough to matter, so the label steps down to berry-800. */
+.nav a[aria-current] {
+  color: var(--berry-800);
+  background: rgba(240, 71, 107, 0.09);
+}
+
+@media (max-width: 759px) {
+  .nav {
+    display: none;
+    position: absolute;
+    left: 0; right: 0;
+    top: 100%;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow-md);
+    padding: 10px var(--gutter) 18px;
+  }
+  .nav.is-open { display: block; }
+  .nav ul { flex-direction: column; gap: 2px; }
+  .nav a { padding: 14px 12px; border-radius: 12px; }
+}
+
+@media (min-width: 760px) {
+  .nav-toggle { display: none; }
+}
+
+/* ---------- Hero (the one loud place) ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: 48px 56px;
+  background:
+    radial-gradient(60% 70% at 15% 0%, rgba(240, 71, 107, 0.1), transparent 62%),
+    radial-gradient(52% 62% at 92% 18%, rgba(246, 196, 69, 0.22), transparent 60%),
+    radial-gradient(46% 60% at 68% 100%, rgba(79, 174, 62, 0.14), transparent 62%),
+    var(--paper);
+}
+
+@media (min-width: 900px) {
+  .hero { padding-block: 76px 88px; }
+  .hero .wrap {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+    gap: 56px;
+  }
+}
+
+.hero h1 { margin-block: 14px 18px; }
+.hero h1 em { font-style: normal; color: var(--berry-700); }
+
+.hero__cta { margin-top: 28px; }
+
+.hero__arc { margin-top: 34px; max-width: 380px; }
+.hero__arc .fruit,
+.hero__arc .fruit__in { transform-box: fill-box; transform-origin: center; }
+
+.hero__art {
+  position: relative;
+  margin-top: 44px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--paper-2);
+  box-shadow: var(--shadow-lg);
+  aspect-ratio: 4 / 3;
+}
+.hero__art img { width: 100%; height: 100%; object-fit: cover; }
+
+@media (min-width: 900px) {
+  .hero__art { margin-top: 0; }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 15px 26px;
+  border: 0;
+  border-radius: var(--pill);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--berry-700);
+  color: #fff;
+  box-shadow: 0 5px 0 var(--berry-900), var(--shadow-md);
+}
+.btn--primary:hover { background: var(--berry-800); }
+.btn--primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--berry-900);
+}
+.btn__arrow { display: inline-block; }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 28px 22px;
+}
+
+@media (min-width: 760px) {
+  .card { padding: 40px; }
+}
+
+/* ---------- Games ---------- */
+#games-list { display: grid; gap: 32px; margin-top: 40px; }
+noscript .card { display: block; margin-top: 40px; }
+
+.game {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: grid;
+  gap: 8px;
+}
+
+/* signature: the fruit tier as a rail across the top of every card */
+.game::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: var(--tier-sweep);
+}
+
+@media (min-width: 940px) {
+  .game {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    align-items: start;
+    gap: 40px;
+  }
+}
+
+.game__text { padding: 30px 22px 30px; }
+
+@media (min-width: 760px) {
+  .game__text { padding: 44px 40px 40px; }
+}
+
+/* Icon + headings sit side by side; the row collapses cleanly
+   to just the headings when a game has no `icon`. */
+.game__head { display: flex; align-items: flex-start; gap: 16px; }
+.game__headings { min-width: 0; }
+
+.game__icon {
+  flex: none;
+  width: 68px;
+  height: 68px;
+  border-radius: 22%;
+  background: var(--paper-2);
+  box-shadow: 0 0 0 1px rgba(58, 42, 63, 0.08), var(--shadow-sm);
+}
+
+@media (min-width: 760px) {
+  .game__head { gap: 20px; }
+  .game__icon { width: 84px; height: 84px; }
+}
+
+.game__title { margin-top: 12px; }
+.game__one {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.125rem;
+  color: var(--berry-700);
+}
+.game__desc { margin-top: 18px; color: var(--muted); max-width: 60ch; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 13px;
+  border-radius: var(--pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tag::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.tag--soon { background: var(--paper-2); color: var(--muted); }
+.tag--out { background: rgba(79, 174, 62, 0.14); color: var(--green-800); }
+
+/* Feature list: ascending fruit tiers as bullets */
+.features {
+  list-style: none;
+  margin-top: 24px;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.features li { position: relative; padding-left: 30px; }
+.features li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.42em;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--t1);
+  transform: scale(0.62);
+}
+.features li:nth-child(2)::before { background: var(--t2); transform: scale(0.74); }
+.features li:nth-child(3)::before { background: var(--t3); transform: scale(0.86); }
+.features li:nth-child(4)::before { background: var(--t4); transform: scale(1); }
+.features li:nth-child(5)::before { background: var(--t5); transform: scale(1); }
+.features li:nth-child(6)::before { background: var(--t6); transform: scale(1); }
+.features li:nth-child(7)::before { background: var(--t7); transform: scale(1); }
+
+/* Store buttons — each platform rendered independently */
+.stores {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge { display: inline-block; border-radius: 10px; }
+.badge img { height: 48px; width: auto; border-radius: 8px; }
+
+/* Non-clickable placeholder, sized to match a real store badge. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px dashed #cfc4bb;
+  border-radius: 10px;
+  background: var(--paper-2);
+  cursor: default;
+}
+.chip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b9aca2;
+  flex: none;
+}
+.chip__text { display: grid; line-height: 1.2; }
+.chip__kicker {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.chip__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #5c4d63;
+}
+
+/* ---------- Screenshots ---------- */
+.shots { padding: 4px 0 26px 22px; }
+
+@media (min-width: 760px) { .shots { padding-left: 40px; } }
+@media (min-width: 940px) { .shots { padding: 44px 40px 40px 0; } }
+
+.shots__viewport {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 0 14px;
+  scrollbar-width: none;
+}
+.shots__viewport::-webkit-scrollbar { display: none; }
+
+.shots__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 14px;
+}
+.shots__list li {
+  flex: 0 0 min(58%, 220px);
+  scroll-snap-align: center;
+}
+
+.shot {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 16px;
+  cursor: zoom-in;
+  line-height: 0;
+}
+.shot img {
+  width: 100%;
+  aspect-ratio: var(--shot-ratio);
+  object-fit: contain;
+  background: var(--paper-2);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.shot:hover img,
+.shot:focus-visible img { box-shadow: var(--shadow-md); }
+
+@media (min-width: 940px) {
+  .shots__list li { flex: 1 1 0; }
+}
+
+/* carousel controls — revealed by JS only when the strip overflows */
+.shots__controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+.shots__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+}
+.shots__nav:hover:not(:disabled) { border-color: var(--berry); color: var(--berry-700); }
+.shots__nav:disabled { opacity: 0.38; cursor: default; }
+.shots__nav svg { width: 18px; height: 18px; }
+
+.shots__dots {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  gap: 8px;
+}
+.shots__dots button {
+  width: 9px; height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  /* 3.1:1 on white — dots are meaningful UI, so WCAG 1.4.11 applies.
+     A paper-tinted dot would only reach ~1.3:1. */
+  background: #9c8f86;
+  cursor: pointer;
+}
+.shots__dots button[aria-current="true"] { background: var(--berry-700); width: 24px; border-radius: var(--pill); }
+
+/* ---------- Lightbox ---------- */
+/* Width is derived from the screenshot ratio, so the dialog hugs the image:
+   boxing a portrait shot in a fixed-width dialog leaves letterbox bars and
+   strands the close button away from the image corner. `fit-content` doesn't
+   work here either — the caption's max-content would drive the width. */
+.lightbox {
+  width: min(94vw, calc(74vh * (var(--shot-ratio))));
+  max-width: 94vw;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--paper);
+  overflow: visible;
+}
+.lightbox::backdrop { background: rgba(30, 20, 34, 0.78); }
+
+.lightbox__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 74vh;
+  border-radius: 18px;
+  background: var(--ink);
+}
+
+.lightbox__cap {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #d9cfdd;
+}
+
+.lightbox__bar {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.lightbox__count {
+  font-family: var(--font-display);
+  font-weight: 600;
+  min-width: 64px;
+  text-align: center;
+}
+.lightbox__nav,
+.lightbox__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  border: 1px solid rgba(252, 249, 244, 0.28);
+  border-radius: 50%;
+  background: rgba(252, 249, 244, 0.08);
+  color: var(--paper);
+  cursor: pointer;
+}
+.lightbox__nav:hover,
+.lightbox__close:hover { background: rgba(252, 249, 244, 0.2); }
+.lightbox__nav svg,
+.lightbox__close svg { width: 18px; height: 18px; }
+
+/* Anchored inside the image corner — sitting it above the dialog would
+   push it off-screen on short viewports. */
+.lightbox__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(30, 20, 34, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+/* ---------- Follow ---------- */
+.follow__links {
+  list-style: none;
+  margin: 30px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.follow__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--pill);
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+.follow__links a:hover {
+  border-color: var(--berry);
+  color: var(--berry-700);
+  box-shadow: var(--shadow-md);
+}
+.follow__links svg { width: 20px; height: 20px; flex: none; }
+.follow__links .arrow { font-weight: 400; opacity: 0.55; }
+
+/* ---------- Back to top ---------- */
+.to-top {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px; height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+.to-top:hover { color: var(--berry-700); border-color: var(--berry); }
+.to-top svg { width: 18px; height: 18px; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  background: var(--ink);
+  color: var(--paper);
+  padding-block: 44px 36px;
+  margin-top: 24px;
+}
+.site-footer .tier-rail { margin-bottom: 30px; }
+.site-footer .tier-rail i:nth-child(7) {
+  background: radial-gradient(circle at 50% 50%, var(--t2) 0 54%, var(--ink) 54% 64%, var(--t5) 64% 100%);
+}
+
+.site-footer .wrap { display: grid; gap: 18px; }
+
+@media (min-width: 760px) {
+  .footer__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+}
+
+.footer__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.site-footer a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+.site-footer a:hover { color: var(--lemon); }
+.footer__meta { color: #c9bccd; font-size: 0.9375rem; }
+
+/* ---------- Text pages ---------- */
+.page-head { padding-block: 44px 8px; }
+.page-head h1 { font-size: clamp(2rem, 5.4vw, 3rem); }
+.page-head .tier-rail { justify-content: flex-start; margin-top: 18px; }
+
+/* A section that sits directly under a .page-head. */
+.section--tight { padding-top: 24px; }
+
+.doc { max-width: 72ch; }
+.doc h2 {
+  font-size: clamp(1.25rem, 2.6vw, 1.5rem);
+  margin-top: 40px;
+}
+.doc h3 { font-size: 1.125rem; margin-top: 28px; }
+.doc p, .doc li { color: var(--muted); }
+.doc p { margin-top: 1rem; }
+.doc ul { margin-top: 1rem; padding-left: 1.15rem; display: grid; gap: 8px; }
+
+.doc .note { margin-top: 8px; color: var(--muted); font-size: 0.9375rem; }
+
+.faq { margin-top: 24px; display: grid; gap: 0; }
+.faq dt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin-top: 20px;
+  color: var(--ink);
+}
+.faq dd { margin: 6px 0 0; color: var(--muted); }
+
+/* =============================================================
+   Motion — everything that moves lives below this line.
+   Gated as a whole, so `prefers-reduced-motion: reduce` yields a
+   completely static page with no leftover transitions.
+   ============================================================= */
+@media (prefers-reduced-motion: no-preference) {
+
+  html { scroll-behavior: smooth; }
+
+  /* scroll-reveal. `.has-reveal` is set by JS only, so a no-JS or
+     no-IntersectionObserver visitor never gets hidden content. */
+  .has-reveal [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  .has-reveal [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--dur-3) var(--ease),
+      transform var(--dur-3) var(--ease);
+    transition-delay: calc(var(--reveal-i, 0) * 90ms);
+  }
+  /* stagger, expressed in markup as data-reveal="1" etc. */
+  .has-reveal [data-reveal="1"] { --reveal-i: 1; }
+  .has-reveal [data-reveal="2"] { --reveal-i: 2; }
+  .has-reveal [data-reveal="3"] { --reveal-i: 3; }
+
+  .site-header { transition: background-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease); }
+  .nav a { transition: background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease); }
+  .nav-toggle { transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease); }
+  .nav-toggle__bars span { transition: transform var(--dur-2) var(--ease), opacity var(--dur-1) var(--ease); }
+
+  .btn--primary { transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease), background-color var(--dur-1) var(--ease); }
+  .btn--primary:hover .btn__arrow { transform: translateY(3px); }
+  .btn__arrow { transition: transform var(--dur-2) var(--ease-back); }
+
+  .badge { transition: transform var(--dur-1) var(--ease); }
+  .badge:hover { transform: translateY(-2px); }
+
+  .shot img { transition: transform var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease); }
+  .shot:hover img,
+  .shot:focus-visible img { transform: translateY(-5px); }
+
+  .shots__nav,
+  .shots__dots button,
+  .to-top,
+  .follow__links a,
+  .lightbox__nav,
+  .lightbox__close { transition: all var(--dur-2) var(--ease); }
+
+  .follow__links a:hover { transform: translateY(-2px); }
+  .follow__links a:hover .arrow { transform: translateX(3px); }
+  .follow__links .arrow { transition: transform var(--dur-2) var(--ease); }
+
+  .to-top:hover { transform: translateY(-3px); }
+
+  /* "Out now" gets a slow living pulse. */
+  .tag--out::before { animation: pulse 2.4s ease-in-out infinite; }
+
+  /* Hero fruit: pop in on load, then bob forever. Hovering lifts one. */
+  .hero__arc .fruit {
+    animation:
+      pop 620ms var(--ease-back) backwards,
+      bob 3.6s ease-in-out infinite;
+  }
+  .hero__arc .fruit:nth-child(1) { animation-delay: 40ms,  760ms; }
+  .hero__arc .fruit:nth-child(2) { animation-delay: 120ms, 880ms; }
+  .hero__arc .fruit:nth-child(3) { animation-delay: 200ms, 1000ms; }
+  .hero__arc .fruit:nth-child(4) { animation-delay: 280ms, 1120ms; }
+  .hero__arc .fruit:nth-child(5) { animation-delay: 360ms, 1240ms; }
+  .hero__arc .fruit:nth-child(6) { animation-delay: 440ms, 1360ms; }
+  .hero__arc .fruit:nth-child(7) { animation-delay: 520ms, 1480ms; }
+
+  .hero__arc .fruit__in { transition: transform var(--dur-2) var(--ease-back); }
+  .hero__arc .fruit:hover .fruit__in { transform: translateY(-9px) scale(1.08); }
+
+  .lightbox[open] { animation: zoom-in var(--dur-2) var(--ease); }
+  .lightbox[open]::backdrop { animation: fade-in var(--dur-2) var(--ease); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+@keyframes pop {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.82); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: none; }
+}

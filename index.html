@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Technic Games — Relaxing Mobile Puzzle Games</title>
+<meta name="description" content="Technic Games makes relaxing, satisfying mobile games for iOS &amp; Android. Play Fruit Sort N Merge — sort stacked fruits, merge matching pairs, reach the final fruit.">
+<link rel="canonical" href="https://technicgames.com/">
+<meta name="theme-color" content="#FCF9F4">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Technic Games">
+<meta property="og:title" content="Technic Games">
+<meta property="og:description" content="Relaxing mobile puzzle games for iOS &amp; Android. Now playing: Fruit Sort N Merge.">
+<meta property="og:image" content="https://technicgames.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Technic Games — relaxing mobile puzzle games for iOS and Android.">
+<meta property="og:url" content="https://technicgames.com">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Technic Games">
+<meta name="twitter:description" content="Relaxing mobile puzzle games for iOS &amp; Android. Now playing: Fruit Sort N Merge.">
+<meta name="twitter:image" content="https://technicgames.com/assets/og-image.png">
+<meta name="twitter:image:alt" content="Technic Games — relaxing mobile puzzle games for iOS and Android.">
+
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="assets/hero.webp" fetchpriority="high">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="index.html">
+      <img src="assets/logo.svg" alt="Technic Games — home" width="162" height="30">
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+      <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      Menu
+    </button>
+
+    <nav class="nav" id="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html#games">Games</a></li>
+        <li><a href="index.html#follow">Follow</a></li>
+        <li><a href="support.html">Support</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Indie mobile games</p>
+        <h1 id="hero-title">Small games. <em>Big satisfaction.</em></h1>
+        <p class="lede">Technic Games makes relaxing, tap-and-play puzzle games for iOS and Android.</p>
+
+        <p class="hero__cta">
+          <a class="btn btn--primary" href="#games">Play our games <span class="btn__arrow">↓</span></a>
+        </p>
+
+        <!-- Signature motif: the ascending fruit tier, cherry → watermelon.
+             Two nested <g> per fruit on purpose: the outer one carries the
+             looping bob, the inner one the hover lift. Both animate
+             `transform`, so they cannot share an element. -->
+        <svg class="hero__arc" viewBox="0 0 400 120" role="img"
+             aria-label="An ascending row of fruit, from a small cherry up to a watermelon.">
+          <g class="fruit"><g class="fruit__in"><circle cx="18"  cy="105" r="5"  fill="#DC3557"/></g></g>
+          <g class="fruit"><g class="fruit__in"><circle cx="52"  cy="103" r="7"  fill="#F0476B"/></g></g>
+          <g class="fruit"><g class="fruit__in"><circle cx="94"  cy="100" r="10" fill="#FF8A3D"/></g></g>
+          <g class="fruit"><g class="fruit__in"><circle cx="143" cy="97"  r="13" fill="#F6C445"/></g></g>
+          <g class="fruit"><g class="fruit__in"><circle cx="200" cy="93"  r="17" fill="#4FAE3E"/></g></g>
+          <g class="fruit"><g class="fruit__in"><circle cx="265" cy="89"  r="21" fill="#8E4FC4"/></g></g>
+          <g class="fruit"><g class="fruit__in">
+            <circle cx="340" cy="84" r="26"   fill="#4FAE3E"/>
+            <circle cx="340" cy="84" r="16.6" fill="#FCF9F4"/>
+            <circle cx="340" cy="84" r="14"   fill="#F0476B"/>
+          </g></g>
+        </svg>
+      </div>
+
+      <div class="hero__art">
+        <img src="assets/hero.webp"
+             alt="Colorful fruit tumbling into stacked containers, from Technic Games' puzzle game Fruit Sort N Merge."
+             width="1200" height="900" fetchpriority="high" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="section" id="about" aria-labelledby="about-title">
+    <div class="wrap">
+      <h2 id="about-title" data-reveal>Who we are</h2>
+      <div class="prose" data-reveal="1">
+        <p>Technic Games is a small indie studio building cozy, satisfying mobile games — the kind you pick up for two minutes and put down happier. No timers, no pressure. Just clean, colorful puzzles designed to help you unwind, wherever you are.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="divider">
+      <span class="tier-rail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    </div>
+  </div>
+
+  <!-- ============ GAMES (rendered from assets/games.js) ============ -->
+  <section class="section" id="games" aria-labelledby="games-title">
+    <div class="wrap">
+      <h2 id="games-title" data-reveal>Our games</h2>
+
+      <div id="games-list"></div>
+
+      <!-- Fallback only. Deliberately states no availability and no store
+           links: both are derived from games.js, and hardcoding them here
+           would silently go stale the moment a game launches. -->
+      <noscript>
+        <div class="card">
+          <div class="game__head">
+            <img class="game__icon" src="assets/fsm-icon.svg" alt="" width="88" height="88">
+            <div class="game__headings">
+              <h3 class="game__title">Fruit Sort N Merge</h3>
+              <p class="game__one">Sort. Merge. Relax.</p>
+            </div>
+          </div>
+          <p class="game__desc">A relaxing puzzle with a twist — part color-sort, part fruit-merge. Pick a container of stacked fruit, drop the top fruit onto a matching one, and the two combine into a higher-tier fruit. Keep going until every stack is solved and only the final fruit remains.</p>
+          <ul class="features">
+            <li>One-tap gameplay anyone can pick up</li>
+            <li>Hundreds of brain-teasing levels</li>
+            <li>Play completely offline — no internet needed</li>
+            <li>Calm, colorful, and free to play</li>
+          </ul>
+          <p class="game__desc">Turn on JavaScript to see where you can download our games.</p>
+        </div>
+      </noscript>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="divider">
+      <span class="tier-rail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    </div>
+  </div>
+
+  <!-- ============ FOLLOW ============ -->
+  <section class="section" id="follow" aria-labelledby="follow-title">
+    <div class="wrap">
+      <h2 id="follow-title" data-reveal>Follow along</h2>
+      <div class="prose" data-reveal="1">
+        <p>New games, new levels, and behind-the-scenes.</p>
+      </div>
+
+      <ul class="follow__links" data-reveal="2">
+        <li>
+          <a href="https://youtube.com/@playtechnicgames" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            YouTube
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://instagram.com/playtechnicgames" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913a5.885 5.885 0 0 0 1.384 2.126A5.868 5.868 0 0 0 4.14 23.37c.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558a5.898 5.898 0 0 0 2.126-1.384 5.86 5.86 0 0 0 1.384-2.126c.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913a5.89 5.89 0 0 0-1.384-2.126A5.847 5.847 0 0 0 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227a3.81 3.81 0 0 1-.899 1.382 3.744 3.744 0 0 1-1.38.896c-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421a3.716 3.716 0 0 1-1.379-.899 3.644 3.644 0 0 1-.9-1.38c-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.899.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm7.846-10.405a1.441 1.441 0 0 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"/></svg>
+            Instagram
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <span class="tier-rail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+  <div class="wrap">
+    <div class="footer__row">
+      <p class="footer__meta">© 2026 Technic Games. All rights reserved.</p>
+      <ul class="footer__links">
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="support.html">Support</a></li>
+      </ul>
+    </div>
+    <p class="footer__meta">Contact: <a href="mailto:support@technicgames.com">support@technicgames.com</a></p>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top" hidden></button>
+
+<!-- Screenshot viewer. Upgraded in by JS only when <dialog> is supported;
+     otherwise the screenshots stay plain, non-clickable images. -->
+<dialog class="lightbox" id="lightbox" aria-label="Screenshot viewer">
+  <button class="lightbox__close" type="button" aria-label="Close screenshot viewer"></button>
+  <img class="lightbox__img" alt="">
+  <p class="lightbox__cap" aria-hidden="true"></p>
+  <div class="lightbox__bar">
+    <button class="lightbox__nav" type="button" data-dir="-1" aria-label="Previous screenshot"></button>
+    <span class="lightbox__count" aria-live="polite"></span>
+    <button class="lightbox__nav" type="button" data-dir="1" aria-label="Next screenshot"></button>
+  </div>
+</dialog>
+
+<!-- games.js first: it defines window.GAMES. `defer` preserves execution order. -->
+<script src="assets/games.js" defer></script>
+<script src="assets/main.js" defer></script>
+</body>
+</html>
