@@ -2,32 +2,88 @@
    Technic Games — shared styles
    Mobile-first. One stylesheet for all three pages.
 
-   Layout note: EVERY transition/animation lives in the "Motion"
-   section at the bottom, inside a single
-   @media (prefers-reduced-motion: no-preference) block. Nothing
-   above that section moves. Keep it that way — it makes the
-   reduced-motion guarantee checkable with a grep.
+   Two structural rules, both mechanically checkable:
+
+   1. MOTION. Every transition/animation lives in the "Motion" section
+      at the bottom, inside a single
+      @media (prefers-reduced-motion: no-preference) block. Nothing above
+      that line moves. Never write `transition: all` — it animates layout
+      properties and forces reflow; name the properties.
+
+   2. THEME. No component hard-codes a colour. Every colour is a token
+      defined once under :root (light) and overridden once under
+      :root[data-theme="dark"]. Adding a component means adding a token,
+      not a second colour block.
    ============================================================= */
 
-/* ---------- Tokens ---------- */
+/* ---------- Fonts (self-hosted; one variable file per family) ----------
+   Both are OFL, so redistribution is permitted. Serving them ourselves
+   removes two cross-origin handshakes and a render-blocking stylesheet
+   from fonts.googleapis.com. One file covers every weight. */
+@font-face {
+  font-family: "Fredoka";
+  src: url("fonts/fredoka-var.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/inter-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Tokens: light (default) ---------- */
 :root {
-  --ink: #3a2a3f;
-  --muted: #6b5a70;          /* 5.9:1 on paper */
-  --paper: #fcf9f4;
-  --paper-2: #f5efe7;
+  color-scheme: light;
+
+  --ink: #3a2a3f;            /* primary text */
+  --muted: #6b5a70;          /* 6.0:1 on paper */
+  --paper: #fcf9f4;          /* page */
+  --paper-2: #f5efe7;        /* recessed: chips, tags */
   --paper-3: #ece2d6;
   --card: #ffffff;
   --line: #e8dfd6;
 
-  --berry: #f0476b;          /* display / decorative accent */
-  --berry-700: #ce2450;      /* interactive: 4.9:1 on paper, 5.3:1 on white */
-  --berry-800: #bd1f49;
-  --berry-900: #a81c40;      /* button "juice" shadow */
+  --berry: #f0476b;          /* decorative accent only — 3.6:1, never text */
+  --accent-text: #ce2450;    /* AA-safe accent for text and links */
+  --accent-strong: #bd1f49;  /* accent text sitting on a tinted background */
+  --accent-btn: #ce2450;
+  --accent-btn-hover: #bd1f49;
+  --accent-btn-shadow: #a81c40;
+  --btn-fg: #ffffff;
+
   --green: #4fae3e;
-  --green-800: #2f6f26;      /* "Out now" tag text */
-  --orange: #ff8a3d;
-  --grape: #8e4fc4;
-  --lemon: #f6c445;
+  --tag-out-bg: rgba(79, 174, 62, 0.14);
+  --tag-out-fg: #2f6f26;
+
+  --nav-current-bg: rgba(240, 71, 107, 0.09);
+
+  --chip-border: #cfc4bb;
+  --chip-dot: #b9aca2;
+  --chip-name: #5c4d63;
+  --dot-idle: #9c8f86;       /* 3.1:1 on card — dots are meaningful UI */
+
+  --footer-bg: #3a2a3f;
+  --footer-fg: #fcf9f4;
+  --footer-meta: #c9bccd;
+
+  --header-bg: rgba(252, 249, 244, 0.82);
+  --header-bg-scrolled: rgba(252, 249, 244, 0.94);
+
+  --glow-berry: rgba(240, 71, 107, 0.1);
+  --glow-lemon: rgba(246, 196, 69, 0.22);
+  --glow-green: rgba(79, 174, 62, 0.14);
+
+  --selection: rgba(240, 71, 107, 0.2);
+  --ring-soft: rgba(58, 42, 63, 0.08);
+
+  --shadow-sm: 0 1px 2px rgba(58, 42, 63, 0.05), 0 2px 8px rgba(58, 42, 63, 0.05);
+  --shadow-md: 0 2px 4px rgba(58, 42, 63, 0.05), 0 14px 32px rgba(58, 42, 63, 0.1);
+  --shadow-lg: 0 4px 10px rgba(58, 42, 63, 0.07), 0 26px 64px rgba(58, 42, 63, 0.16);
+  --shadow-header: 0 8px 28px rgba(58, 42, 63, 0.07);
 
   /* fruit tiers, ascending: cherry -> strawberry -> orange -> lemon -> lime -> grape -> watermelon */
   --t1: #dc3557;
@@ -42,15 +98,22 @@
     var(--t1) 0%, var(--t2) 18%, var(--t3) 36%,
     var(--t4) 54%, var(--t5) 74%, var(--t6) 100%);
 
+  /* The lightbox is a dark overlay in BOTH themes, so its colours are fixed
+     and deliberately absent from the dark block below. */
+  --lightbox-mat: #17111b;
+  --lightbox-fg: #f5eff7;
+  --lightbox-cap: #d9cfdd;
+  --lightbox-btn-bg: rgba(245, 239, 247, 0.08);
+  --lightbox-btn-bg-hover: rgba(245, 239, 247, 0.2);
+  --lightbox-btn-border: rgba(245, 239, 247, 0.28);
+  --lightbox-close-bg: rgba(23, 17, 27, 0.62);
+  --backdrop: rgba(24, 17, 28, 0.8);
+
   --wrap: 1120px;
   --gutter: 20px;
   --radius: 16px;
   --radius-lg: 28px;
   --pill: 999px;
-
-  --shadow-sm: 0 1px 2px rgba(58, 42, 63, 0.05), 0 2px 8px rgba(58, 42, 63, 0.05);
-  --shadow-md: 0 2px 4px rgba(58, 42, 63, 0.05), 0 14px 32px rgba(58, 42, 63, 0.1);
-  --shadow-lg: 0 4px 10px rgba(58, 42, 63, 0.07), 0 26px 64px rgba(58, 42, 63, 0.16);
 
   --dur-1: 140ms;
   --dur-2: 260ms;
@@ -61,12 +124,61 @@
   --font-display: "Fredoka", ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  /* Screenshot aspect ratio — matches the 1284x2778 source images.
-     Change this one value if you swap in screenshots of another size.
-     (object-fit is `contain`, so a mismatch letterboxes; it never crops.) */
+  /* Screenshot aspect ratio. Change this one value if you swap in
+     screenshots of another size — it also sizes the lightbox. */
   --shot-ratio: 1284 / 2778;
+}
 
-  color-scheme: light;
+/* ---------- Tokens: dark ----------
+   Set by the inline script in <head> before first paint, so there is no
+   flash. Without JS the site stays light (see PERFORMANCE.md). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink: #f6f1f8;
+  --muted: #b4a6bc;          /* 8.0:1 on paper */
+  --paper: #1a1320;
+  --paper-2: #2a2032;
+  --paper-3: #453a4e;
+  --card: #231a29;
+  --line: #372b40;
+
+  --berry: #ff6183;
+  --accent-text: #ff7d9c;    /* 7.5:1 on paper */
+  --accent-strong: #ffa0b8;
+  --accent-btn: #f0476b;     /* the brand berry, at full strength */
+  --accent-btn-hover: #ff5c7f;
+  --accent-btn-shadow: #b81c42;
+  --btn-fg: #1a1320;         /* dark text on a bright berry: 5.1:1 */
+
+  --tag-out-bg: rgba(79, 174, 62, 0.18);
+  --tag-out-fg: #8fe07e;
+
+  --nav-current-bg: rgba(255, 97, 131, 0.14);
+
+  --chip-border: #4a3c54;
+  --chip-dot: #6e5d78;
+  --chip-name: #cfc2d6;
+  --dot-idle: #7e6e86;       /* 3.5:1 on card */
+
+  --footer-bg: #120d16;
+  --footer-fg: #f6f1f8;
+  --footer-meta: #b4a6bc;
+
+  --header-bg: rgba(26, 19, 32, 0.8);
+  --header-bg-scrolled: rgba(26, 19, 32, 0.94);
+
+  --glow-berry: rgba(240, 71, 107, 0.16);
+  --glow-lemon: rgba(246, 196, 69, 0.1);
+  --glow-green: rgba(79, 174, 62, 0.12);
+
+  --selection: rgba(255, 97, 131, 0.28);
+  --ring-soft: rgba(0, 0, 0, 0.5);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3), 0 14px 32px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 4px 10px rgba(0, 0, 0, 0.35), 0 26px 64px rgba(0, 0, 0, 0.5);
+  --shadow-header: 0 8px 28px rgba(0, 0, 0, 0.5);
 }
 
 /* ---------- Reset ---------- */
@@ -104,21 +216,23 @@ main { flex: 1 0 auto; }
 img, svg { display: block; max-width: 100%; }
 img { height: auto; }
 
-a { color: var(--berry-700); }
+a { color: var(--accent-text); }
 
 button { font: inherit; color: inherit; }
 
-::selection { background: rgba(240, 71, 107, 0.2); color: var(--ink); }
+::selection { background: var(--selection); color: var(--ink); }
 
-/* ---------- Focus ---------- */
+/* ---------- Focus ----------
+   var(--ink) flips with the theme, so the ring is always the opposite
+   of the page. Surfaces that stay dark in both themes override it. */
 :where(a, button, [tabindex]):focus-visible {
   outline: 3px solid var(--ink);
   outline-offset: 3px;
   border-radius: 8px;
 }
 
-.site-footer :where(a, button):focus-visible,
-.lightbox :where(a, button):focus-visible { outline-color: var(--paper); }
+.site-footer :where(a, button):focus-visible { outline-color: var(--footer-fg); }
+.lightbox :where(a, button):focus-visible { outline-color: var(--lightbox-fg); }
 
 .sr-only {
   position: absolute;
@@ -134,8 +248,8 @@ button { font: inherit; color: inherit; }
   position: absolute;
   left: 12px; top: -100px;
   z-index: 100;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--accent-btn);
+  color: var(--btn-fg);
   padding: 12px 18px;
   border-radius: 0 0 12px 12px;
   text-decoration: none;
@@ -177,7 +291,7 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
   font-size: 0.8125rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--berry-700);
+  color: var(--accent-text);
 }
 
 .lede {
@@ -243,26 +357,55 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(252, 249, 244, 0.82);
-  backdrop-filter: saturate(1.4) blur(10px);
+  background: var(--header-bg);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid transparent;
 }
 .site-header.is-scrolled {
-  background: rgba(252, 249, 244, 0.94);
+  background: var(--header-bg-scrolled);
   border-bottom-color: var(--line);
-  box-shadow: 0 8px 28px rgba(58, 42, 63, 0.07);
+  box-shadow: var(--shadow-header);
 }
 
 .site-header .wrap {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   min-height: 66px;
 }
 
-.logo { display: inline-flex; align-items: center; }
-.logo img { height: 30px; width: auto; }
+/* The logo is GENERATED into the markup from assets/logo.svg by
+   tools/sync-logo.py — never hand-edit it, and never let the two drift
+   (tools/lint.py enforces both). It is inlined rather than <img>'d because an
+   <img> SVG is an isolated document: page CSS cannot reach inside it, and the
+   wordmark (currentColor) and gamepad (var(--muted)) must follow the theme.
+   Never "fix" a logo for dark mode with filter: invert() — it inverts the
+   brand colours too. */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  margin-right: auto;
+  color: var(--ink);   /* drives the wordmark's currentColor */
+}
+.logo svg { height: 30px; width: auto; }
+
+.header__actions { display: flex; align-items: center; gap: 10px; }
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--berry); color: var(--accent-text); }
+.icon-btn svg { width: 18px; height: 18px; }
 
 .nav-toggle {
   display: inline-flex;
@@ -276,7 +419,7 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
   color: var(--ink);
   cursor: pointer;
 }
-.nav-toggle:hover { border-color: var(--berry); color: var(--berry-700); }
+.nav-toggle:hover { border-color: var(--berry); color: var(--accent-text); }
 
 .nav-toggle__bars { display: grid; gap: 3px; }
 .nav-toggle__bars span {
@@ -307,14 +450,13 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
   text-decoration: none;
   font-weight: 500;
 }
-.nav a:hover { background: var(--paper-2); color: var(--berry-700); }
+.nav a:hover { background: var(--paper-2); color: var(--accent-text); }
 
-/* current section / page.
-   berry-700 on this tint measures 4.49:1 — a hair under AA. The tint darkens
-   the paper just enough to matter, so the label steps down to berry-800. */
+/* current section / page. accent-text on this tint measures 4.49:1 — a hair
+   under AA — so the label steps up to accent-strong. */
 .nav a[aria-current] {
-  color: var(--berry-800);
-  background: rgba(240, 71, 107, 0.09);
+  color: var(--accent-strong);
+  background: var(--nav-current-bg);
 }
 
 @media (max-width: 759px) {
@@ -343,9 +485,9 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
   overflow: hidden;
   padding-block: 48px 56px;
   background:
-    radial-gradient(60% 70% at 15% 0%, rgba(240, 71, 107, 0.1), transparent 62%),
-    radial-gradient(52% 62% at 92% 18%, rgba(246, 196, 69, 0.22), transparent 60%),
-    radial-gradient(46% 60% at 68% 100%, rgba(79, 174, 62, 0.14), transparent 62%),
+    radial-gradient(60% 70% at 15% 0%, var(--glow-berry), transparent 62%),
+    radial-gradient(52% 62% at 92% 18%, var(--glow-lemon), transparent 60%),
+    radial-gradient(46% 60% at 68% 100%, var(--glow-green), transparent 62%),
     var(--paper);
 }
 
@@ -360,13 +502,15 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
 }
 
 .hero h1 { margin-block: 14px 18px; }
-.hero h1 em { font-style: normal; color: var(--berry-700); }
+.hero h1 em { font-style: normal; color: var(--accent-text); }
 
 .hero__cta { margin-top: 28px; }
 
 .hero__arc { margin-top: 34px; max-width: 380px; }
 .hero__arc .fruit,
 .hero__arc .fruit__in { transform-box: fill-box; transform-origin: center; }
+/* the watermelon's pith ring must match the page, not the light theme */
+.hero__arc .pith { fill: var(--paper); }
 
 .hero__art {
   position: relative;
@@ -398,14 +542,14 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
 }
 
 .btn--primary {
-  background: var(--berry-700);
-  color: #fff;
-  box-shadow: 0 5px 0 var(--berry-900), var(--shadow-md);
+  background: var(--accent-btn);
+  color: var(--btn-fg);
+  box-shadow: 0 5px 0 var(--accent-btn-shadow), var(--shadow-md);
 }
-.btn--primary:hover { background: var(--berry-800); }
+.btn--primary:hover { background: var(--accent-btn-hover); }
 .btn--primary:active {
   transform: translateY(3px);
-  box-shadow: 0 2px 0 var(--berry-900);
+  box-shadow: 0 2px 0 var(--accent-btn-shadow);
 }
 .btn__arrow { display: inline-block; }
 
@@ -471,7 +615,7 @@ noscript .card { display: block; margin-top: 40px; }
   height: 68px;
   border-radius: 22%;
   background: var(--paper-2);
-  box-shadow: 0 0 0 1px rgba(58, 42, 63, 0.08), var(--shadow-sm);
+  box-shadow: 0 0 0 1px var(--ring-soft), var(--shadow-sm);
 }
 
 @media (min-width: 760px) {
@@ -485,7 +629,7 @@ noscript .card { display: block; margin-top: 40px; }
   font-family: var(--font-display);
   font-weight: 500;
   font-size: 1.125rem;
-  color: var(--berry-700);
+  color: var(--accent-text);
 }
 .game__desc { margin-top: 18px; color: var(--muted); max-width: 60ch; }
 
@@ -508,7 +652,7 @@ noscript .card { display: block; margin-top: 40px; }
   flex: none;
 }
 .tag--soon { background: var(--paper-2); color: var(--muted); }
-.tag--out { background: rgba(79, 174, 62, 0.14); color: var(--green-800); }
+.tag--out { background: var(--tag-out-bg); color: var(--tag-out-fg); }
 
 /* Feature list: ascending fruit tiers as bullets */
 .features {
@@ -549,6 +693,10 @@ noscript .card { display: block; margin-top: 40px; }
 .badge { display: inline-block; border-radius: 10px; }
 .badge img { height: 48px; width: auto; border-radius: 8px; }
 
+/* Official store badges are black artwork and may not be modified.
+   On a dark card their edge disappears, so ring them instead. */
+:root[data-theme="dark"] .badge img { box-shadow: 0 0 0 1px var(--line); }
+
 /* Non-clickable placeholder, sized to match a real store badge. */
 .chip {
   display: inline-flex;
@@ -556,7 +704,7 @@ noscript .card { display: block; margin-top: 40px; }
   gap: 10px;
   height: 48px;
   padding: 0 16px;
-  border: 1px dashed #cfc4bb;
+  border: 1px dashed var(--chip-border);
   border-radius: 10px;
   background: var(--paper-2);
   cursor: default;
@@ -565,7 +713,7 @@ noscript .card { display: block; margin-top: 40px; }
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #b9aca2;
+  background: var(--chip-dot);
   flex: none;
 }
 .chip__text { display: grid; line-height: 1.2; }
@@ -580,7 +728,7 @@ noscript .card { display: block; margin-top: 40px; }
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.9375rem;
-  color: #5c4d63;
+  color: var(--chip-name);
 }
 
 /* ---------- Screenshots ---------- */
@@ -656,7 +804,7 @@ noscript .card { display: block; margin-top: 40px; }
   color: var(--ink);
   cursor: pointer;
 }
-.shots__nav:hover:not(:disabled) { border-color: var(--berry); color: var(--berry-700); }
+.shots__nav:hover:not(:disabled) { border-color: var(--berry); color: var(--accent-text); }
 .shots__nav:disabled { opacity: 0.38; cursor: default; }
 .shots__nav svg { width: 18px; height: 18px; }
 
@@ -671,12 +819,10 @@ noscript .card { display: block; margin-top: 40px; }
   padding: 0;
   border: 0;
   border-radius: 50%;
-  /* 3.1:1 on white — dots are meaningful UI, so WCAG 1.4.11 applies.
-     A paper-tinted dot would only reach ~1.3:1. */
-  background: #9c8f86;
+  background: var(--dot-idle);
   cursor: pointer;
 }
-.shots__dots button[aria-current="true"] { background: var(--berry-700); width: 24px; border-radius: var(--pill); }
+.shots__dots button[aria-current="true"] { background: var(--accent-btn); width: 24px; border-radius: var(--pill); }
 
 /* ---------- Lightbox ---------- */
 /* Width is derived from the screenshot ratio, so the dialog hugs the image:
@@ -689,10 +835,10 @@ noscript .card { display: block; margin-top: 40px; }
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--paper);
+  color: var(--lightbox-fg);
   overflow: visible;
 }
-.lightbox::backdrop { background: rgba(30, 20, 34, 0.78); }
+.lightbox::backdrop { background: var(--backdrop); }
 
 .lightbox__img {
   display: block;
@@ -700,7 +846,7 @@ noscript .card { display: block; margin-top: 40px; }
   height: auto;
   max-height: 74vh;
   border-radius: 18px;
-  background: var(--ink);
+  background: var(--lightbox-mat);
 }
 
 .lightbox__cap {
@@ -708,7 +854,7 @@ noscript .card { display: block; margin-top: 40px; }
   text-align: center;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: #d9cfdd;
+  color: var(--lightbox-cap);
 }
 
 .lightbox__bar {
@@ -730,14 +876,14 @@ noscript .card { display: block; margin-top: 40px; }
   align-items: center;
   justify-content: center;
   width: 44px; height: 44px;
-  border: 1px solid rgba(252, 249, 244, 0.28);
+  border: 1px solid var(--lightbox-btn-border);
   border-radius: 50%;
-  background: rgba(252, 249, 244, 0.08);
-  color: var(--paper);
+  background: var(--lightbox-btn-bg);
+  color: var(--lightbox-fg);
   cursor: pointer;
 }
 .lightbox__nav:hover,
-.lightbox__close:hover { background: rgba(252, 249, 244, 0.2); }
+.lightbox__close:hover { background: var(--lightbox-btn-bg-hover); }
 .lightbox__nav svg,
 .lightbox__close svg { width: 18px; height: 18px; }
 
@@ -747,7 +893,7 @@ noscript .card { display: block; margin-top: 40px; }
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(30, 20, 34, 0.62);
+  background: var(--lightbox-close-bg);
   backdrop-filter: blur(4px);
 }
 
@@ -775,7 +921,7 @@ noscript .card { display: block; margin-top: 40px; }
 }
 .follow__links a:hover {
   border-color: var(--berry);
-  color: var(--berry-700);
+  color: var(--accent-text);
   box-shadow: var(--shadow-md);
 }
 .follow__links svg { width: 20px; height: 20px; flex: none; }
@@ -787,30 +933,21 @@ noscript .card { display: block; margin-top: 40px; }
   right: 18px;
   bottom: 18px;
   z-index: 60;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 46px; height: 46px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
   background: var(--card);
-  color: var(--ink);
   box-shadow: var(--shadow-md);
-  cursor: pointer;
 }
-.to-top:hover { color: var(--berry-700); border-color: var(--berry); }
-.to-top svg { width: 18px; height: 18px; }
 
 /* ---------- Footer ---------- */
 .site-footer {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--footer-bg);
+  color: var(--footer-fg);
   padding-block: 44px 36px;
   margin-top: 24px;
 }
 .site-footer .tier-rail { margin-bottom: 30px; }
 .site-footer .tier-rail i:nth-child(7) {
-  background: radial-gradient(circle at 50% 50%, var(--t2) 0 54%, var(--ink) 54% 64%, var(--t5) 64% 100%);
+  background: radial-gradient(circle at 50% 50%, var(--t2) 0 54%, var(--footer-bg) 54% 64%, var(--t5) 64% 100%);
 }
 
 .site-footer .wrap { display: grid; gap: 18px; }
@@ -832,9 +969,9 @@ noscript .card { display: block; margin-top: 40px; }
   flex-wrap: wrap;
   gap: 20px;
 }
-.site-footer a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
-.site-footer a:hover { color: var(--lemon); }
-.footer__meta { color: #c9bccd; font-size: 0.9375rem; }
+.site-footer a { color: var(--footer-fg); text-decoration: underline; text-underline-offset: 3px; }
+.site-footer a:hover { color: var(--t4); }
+.footer__meta { color: var(--footer-meta); font-size: 0.9375rem; }
 
 /* ---------- Text pages ---------- */
 .page-head { padding-block: 44px 8px; }
@@ -869,6 +1006,10 @@ noscript .card { display: block; margin-top: 40px; }
    Motion — everything that moves lives below this line.
    Gated as a whole, so `prefers-reduced-motion: reduce` yields a
    completely static page with no leftover transitions.
+
+   Only compositor-friendly properties (transform, opacity) and cheap
+   paint properties (color, background-color, box-shadow, border-color)
+   are animated. Never `transition: all`.
    ============================================================= */
 @media (prefers-reduced-motion: no-preference) {
 
@@ -895,7 +1036,8 @@ noscript .card { display: block; margin-top: 40px; }
 
   .site-header { transition: background-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease); }
   .nav a { transition: background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease); }
-  .nav-toggle { transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease); }
+  .nav-toggle,
+  .icon-btn { transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease); }
   .nav-toggle__bars span { transition: transform var(--dur-2) var(--ease), opacity var(--dur-1) var(--ease); }
 
   .btn--primary { transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease), background-color var(--dur-1) var(--ease); }
@@ -909,18 +1051,19 @@ noscript .card { display: block; margin-top: 40px; }
   .shot:hover img,
   .shot:focus-visible img { transform: translateY(-5px); }
 
-  .shots__nav,
-  .shots__dots button,
-  .to-top,
-  .follow__links a,
+  .shots__nav { transition: color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease); }
+  /* width is a layout property; it is animated on exactly three 9px dots. */
+  .shots__dots button { transition: background-color var(--dur-2) var(--ease), width var(--dur-2) var(--ease); }
   .lightbox__nav,
-  .lightbox__close { transition: all var(--dur-2) var(--ease); }
+  .lightbox__close { transition: background-color var(--dur-2) var(--ease); }
 
+  .to-top { transition: transform var(--dur-2) var(--ease), color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease); }
+  .to-top:hover { transform: translateY(-3px); }
+
+  .follow__links a { transition: transform var(--dur-2) var(--ease), color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease); }
   .follow__links a:hover { transform: translateY(-2px); }
   .follow__links a:hover .arrow { transform: translateX(3px); }
   .follow__links .arrow { transition: transform var(--dur-2) var(--ease); }
-
-  .to-top:hover { transform: translateY(-3px); }
 
   /* "Out now" gets a slow living pulse. */
   .tag--out::before { animation: pulse 2.4s ease-in-out infinite; }
