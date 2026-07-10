@@ -115,6 +115,13 @@
   --radius-lg: 28px;
   --pill: 999px;
 
+  /* Header logo height. THE one knob for logo size — change this line only.
+     The header reserves 66px, so up to ~46px sits comfortably. If you go
+     much past that, bump `.site-header .wrap { min-height }` too.
+     Keep tools/sync-logo.py's HEIGHT in step so the SVG's width/height
+     attributes match and there is no layout shift. */
+  --logo-height: 40px;
+
   --dur-1: 140ms;
   --dur-2: 260ms;
   --dur-3: 560ms;
@@ -387,7 +394,7 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
   margin-right: auto;
   color: var(--ink);   /* drives the wordmark's currentColor */
 }
-.logo svg { height: 30px; width: auto; }
+.logo svg { height: var(--logo-height); width: auto; }
 
 .header__actions { display: flex; align-items: center; gap: 10px; }
 

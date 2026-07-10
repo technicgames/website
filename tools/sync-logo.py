@@ -34,7 +34,7 @@ from svgutil import normalize_filter_regions  # noqa: E402
 SRC = "assets/logo.svg"
 PAGES = ("index.html", "privacy.html", "support.html")
 PREFIX = "tglogo-"
-HEIGHT = 30
+HEIGHT = 40  # keep in step with --logo-height in assets/styles.css
 
 START = "<!-- LOGO:START — generated from assets/logo.svg by tools/sync-logo.py. Do not edit by hand. -->"
 END = "<!-- LOGO:END -->"
