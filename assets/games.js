@@ -61,7 +61,7 @@ window.GAMES = [
     ],
 
     // Paste the store URLs here when the app is approved.
-    ios: "",
+    ios: "https://apps.apple.com/us/app/fruit-sort-n-merge/id6760463199",
     android: "https://play.google.com/store/apps/details?id=com.technicgames.FruitSortNMerge"
   }
 ];
