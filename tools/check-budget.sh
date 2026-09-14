@@ -32,9 +32,12 @@ fonts=$(( $(raw assets/fonts/inter-var.woff2) + $(raw assets/fonts/fredoka-var.w
 hero=$(raw assets/hero.webp)
 
 # --- lazy, but still on the page ---------------------------------------
+# Every game card renders on the home page, so count every game's thumbnails
+# and icon, not just one game's. Roughly ~70 KB of thumbs + ~4 KB icon per game.
 thumbs=0
-for f in assets/fsm-*-thumb.webp; do thumbs=$(( thumbs + $(raw "$f") )); done
-icon=$(raw assets/fsm-icon.webp)
+for f in assets/*-thumb.webp; do thumbs=$(( thumbs + $(raw "$f") )); done
+icon=0
+for f in assets/*-icon.webp; do icon=$(( icon + $(raw "$f") )); done
 
 echo "Technic Games — first-view budget (home page)"
 echo
@@ -49,19 +52,22 @@ echo
 check "HTML+CSS+JS (gzipped)" "$code"   30720    # 30 KB
 check "fonts (woff2, latin)"  "$fonts"  81920    # 80 KB
 check "hero image (LCP)"      "$hero"   40960    # 40 KB
-check "screenshot thumbnails" "$thumbs" 102400   # 100 KB
-check "game icon"             "$icon"    10240   # 10 KB
+check "screenshot thumbnails" "$thumbs" 204800   # 200 KB (~70 KB/game; 2 games)
+check "game icons"            "$icon"    20480   # 20 KB  (~4 KB/game)
 
 total=$(( code + fonts + hero + thumbs + icon ))
 echo
-check "TOTAL first view"      "$total"  266240   # 260 KB
+# 320 KB. Grows ~74 KB per game card (its 3 lazy thumbnails + icon), since
+# every card renders on the home page. Two games today. A third would push
+# this and warrant a conscious bump — don't raise it to silence one; check
+# the per-bucket lines first.
+check "TOTAL first view"      "$total"  327680   # 320 KB
 
 echo
 echo "Not counted (correctly excluded from first view):"
-echo "  - assets/fsm-*-full.webp   fetched only when the lightbox opens"
+echo "  - assets/*-full.webp       fetched only when the lightbox opens"
 echo "  - assets/og-image.png      fetched only by social crawlers"
-echo "  - assets/fsm-*.jpg         sources; never referenced by the site"
-echo "  - assets/fsm-icon.svg      source; never referenced by the site"
+echo "  - assets/lbs/, *.jpg, fsm-icon.svg   sources; never referenced by the site"
 echo "  - assets/logo.svg          inlined into the HTML; kept for JSON-LD + press"
 
 if [ "$fail" -ne 0 ]; then
