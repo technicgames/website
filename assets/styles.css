@@ -311,6 +311,46 @@ h3 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
 .prose p { margin-top: 1rem; max-width: 68ch; color: var(--muted); }
 .prose p:first-child { margin-top: 0; }
 
+/* Developer credit (About section) */
+.byline {
+  margin-top: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.byline__avatar {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--tier-sweep);   /* shows behind/until a photo is added */
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 1px var(--ring-soft), var(--shadow-sm);
+}
+.byline__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.byline__text { display: grid; gap: 2px; }
+.byline__label {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.byline__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  color: var(--ink);
+}
+
 /* Section heading with a short tier underline. */
 .section > .wrap > h2 { position: relative; padding-bottom: 18px; }
 .section > .wrap > h2::after {

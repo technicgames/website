@@ -1,3 +1,6 @@
 .DS_Store
 __pycache__/
 .claude/
+
+# 14 MB photo master; only the optimized assets/firoz.webp is served/committed
+assets/firoz-src.png
