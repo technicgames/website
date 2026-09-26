@@ -51,6 +51,13 @@ GAMES = [
         # Artboards 4-6 are extra marketing shots; games.js shows only three.
         "screenshots": ["lbs/Artboard 1.png", "lbs/Artboard 2.jpg", "lbs/Artboard 3.jpg"],
     },
+    {
+        "prefix": "pnd",
+        "icon": "pnd/Icon.png",
+        # The App Store slides, which carry their own captions. The store set has
+        # five; these are the three that tell the whole story on their own.
+        "screenshots": ["pnd/Shot 1.png", "pnd/Shot 2.png", "pnd/Shot 3.png"],
+    },
 ]
 
 THUMB_W = 440    # card: 220 CSS px box, 2x
