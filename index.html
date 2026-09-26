@@ -207,13 +207,13 @@
         <p>Technic Games is a small indie studio building cozy, satisfying mobile games — the kind you pick up for two minutes and put down happier. No timers, no pressure. Just clean, colorful puzzles designed to help you unwind, wherever you are.</p>
       </div>
 
-      <!-- Developer credit. Photo generated from assets/firoz-src.png:
-           crop((1248,439,2068,1259)) -> assets/firoz.webp, 192px, q82.
-           alt="" because the name sits right beside it (avoids double read). -->
+      <!-- Developer credit. Avatar is an "FK" monogram for now. To use a photo:
+           put the source at assets/firoz-src.png (gitignored), generate
+           assets/firoz.webp (192px, q82), then replace the "FK" text node in
+           .byline__avatar with:
+           <img src="assets/firoz.webp" alt="" width="192" height="192" loading="lazy" decoding="async"> -->
       <div class="byline" data-reveal="2">
-        <span class="byline__avatar">
-          <img src="assets/firoz.webp" alt="" width="192" height="192" loading="lazy" decoding="async">
-        </span>
+        <span class="byline__avatar" aria-hidden="true">FK</span>
         <span class="byline__text">
           <span class="byline__label">Developer</span>
           <span class="byline__name">Firoz Khan</span>
