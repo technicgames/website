@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Resolve theme before first paint (shared with the main site via the same
+     localStorage key). Must sit above the stylesheet link. -->
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem("tg-theme"); } catch (e) {}
+  if (t !== "light" && t !== "dark") {
+    t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
+
+<title>Pushlings — Press Kit</title>
+<meta name="description" content="Press kit for Pushlings, a cozy logic puzzle game by Technic Games — screenshots, key art, logos, trailer, fact sheet and downloads. All assets free to use in coverage.">
+<link rel="canonical" href="https://technicgames.com/pushlings-press/">
+<meta name="theme-color" content="#FCF9F4">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Technic Games">
+<meta property="og:title" content="Pushlings — Press Kit">
+<meta property="og:description" content="Screenshots, key art, logos, trailer and fact sheet for Pushlings. Free to use in coverage.">
+<meta property="og:image" content="https://technicgames.com/pushlings-press/keyart/Pushlings_KeyArt_3840x2160.jpg">
+<meta property="og:url" content="https://technicgames.com/pushlings-press/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://technicgames.com/pushlings-press/keyart/Pushlings_KeyArt_3840x2160.jpg">
+
+<link rel="icon" href="../assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+
+<link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/fredoka-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/styles.css">
+
+<!-- Press-specific layout. Kept here, not in assets/styles.css, so it stays out
+     of the home page's CSS payload budget. Uses the shared design tokens. -->
+<style>
+  .pk-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 66px; }
+  .pk-home { font-family: var(--font-display); font-weight: 600; color: var(--ink); text-decoration: none; }
+  .pk-home:hover { color: var(--accent-text); }
+
+  /* theme toggle: both icons inline, CSS shows the one for the target theme */
+  .theme-toggle .pk-sun { display: none; }
+  :root[data-theme="dark"] .theme-toggle .pk-moon { display: none; }
+  :root[data-theme="dark"] .theme-toggle .pk-sun { display: inline; }
+  .theme-toggle svg { width: 18px; height: 18px; }
+
+  .pk-hero {
+    text-align: center;
+    padding-block: 40px 8px;
+    background:
+      radial-gradient(60% 80% at 50% 0%, var(--glow-berry), transparent 70%),
+      radial-gradient(50% 70% at 85% 30%, var(--glow-lemon), transparent 70%);
+    border-radius: var(--radius-lg);
+  }
+  .pk-hero__logo { width: min(520px, 80%); height: auto; margin: 8px auto 0; }
+  .pk-eyebrow { color: var(--accent-text); }
+  .pk-lede { margin: 14px auto 0; max-width: 60ch; color: var(--muted); font-size: 1.0625rem; }
+  .pk-cta { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+  .pk-store { display: inline-flex; align-items: center; gap: 8px; padding: 13px 20px; border-radius: var(--pill);
+    border: 1px solid var(--line); background: var(--card); color: var(--ink); font-weight: 600; text-decoration: none; }
+  .pk-store:hover { border-color: var(--berry); color: var(--accent-text); }
+
+  /* fact sheet */
+  .pk-facts { margin: 24px 0 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .pk-facts div { display: grid; grid-template-columns: minmax(120px, 0.4fr) 1fr; gap: 16px;
+    padding: 11px 2px; border-bottom: 1px solid var(--line); }
+  .pk-facts dt { font-family: var(--font-display); font-weight: 600; color: var(--ink); font-size: 0.9375rem; }
+  .pk-facts dd { margin: 0; color: var(--muted); }
+  .pk-facts a { color: var(--accent-text); }
+
+  .pk-features { margin-top: 20px; padding-left: 1.15rem; display: grid; gap: 10px; }
+  .pk-features li { color: var(--muted); }
+  .pk-features strong { color: var(--ink); font-weight: 600; }
+
+  /* galleries */
+  .pk-grid { margin-top: 28px; display: grid; gap: 16px; }
+  .pk-grid--shots { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .pk-grid--worlds { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .pk-grid--gifs { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); max-width: 620px; }
+  .pk-grid--art { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+  .pk-grid a { display: block; text-decoration: none; }
+  .pk-grid img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line);
+    background: var(--paper-2); box-shadow: var(--shadow-sm); }
+  .pk-grid--shots img, .pk-grid--gifs img { aspect-ratio: 1320 / 2868; object-fit: cover; }
+  .pk-grid--worlds img, .pk-grid--art img { aspect-ratio: 4 / 3; object-fit: cover; }
+
+  .pk-card__cap { display: block; margin-top: 8px; font-size: 0.8125rem; color: var(--muted); }
+  .pk-card__cap b { color: var(--ink); font-weight: 600; font-family: var(--font-display); }
+
+  .pk-video { margin-top: 28px; }
+  .pk-video video { width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--line);
+    background: #000; box-shadow: var(--shadow-md); aspect-ratio: 16 / 9; }
+
+  /* download chips (logos) */
+  .pk-downloads { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .pk-dl { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: var(--pill);
+    border: 1px solid var(--line); background: var(--card); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.9375rem; }
+  .pk-dl:hover { border-color: var(--berry); color: var(--accent-text); }
+  .pk-dl svg { width: 16px; height: 16px; flex: none; }
+
+  .pk-usage { margin-top: 28px; padding: 16px 18px; border-radius: 14px; background: var(--paper-2);
+    color: var(--muted); font-size: 0.9375rem; }
+  .pk-usage strong { color: var(--ink); }
+</style>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap pk-bar">
+    <a class="pk-home" href="../index.html">← Technic Games</a>
+    <button class="theme-toggle icon-btn" type="button" aria-label="Switch theme" title="Switch theme">
+      <svg class="pk-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"/></svg>
+      <svg class="pk-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"/><path d="M12 1.8v2.1M12 20.1v2.1M4.8 4.8l1.5 1.5M17.7 17.7l1.5 1.5M1.8 12h2.1M20.1 12h2.1M4.8 19.2l1.5-1.5M17.7 6.3l1.5-1.5"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="section" style="padding-top:28px">
+    <div class="wrap">
+      <div class="pk-hero">
+        <p class="eyebrow pk-eyebrow">Press Kit</p>
+        <img class="pk-hero__logo" src="logo/Pushlings_Logo.png" alt="Pushlings" width="3000" height="554">
+        <p class="pk-lede">A cozy logic puzzle game about pushing crates and bending the rules. By Technic Games.</p>
+        <div class="pk-cta">
+          <a class="btn btn--primary" href="Pushlings_PressKit.zip" download>Download full kit (ZIP, 13&nbsp;MB)</a>
+          <a class="pk-store" href="https://apps.apple.com/app/id6817405644" target="_blank" rel="noopener">App Store ↗</a>
+          <a class="pk-store" href="https://play.google.com/store/apps/details?id=com.technicgames.pushlings" target="_blank" rel="noopener">Google Play ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACT SHEET -->
+  <section class="section" id="facts" style="padding-block:24px">
+    <div class="wrap">
+      <h2>Fact sheet</h2>
+      <dl class="pk-facts">
+        <div><dt>Developer</dt><dd>Technic Games — <a href="https://technicgames.com">technicgames.com</a></dd></div>
+        <div><dt>Release date</dt><dd>16 November 2026 worldwide. Soft launch from 2 November 2026 in Canada, Australia and New Zealand.</dd></div>
+        <div><dt>Platforms</dt><dd>iPhone (iOS) and Android phones</dd></div>
+        <div><dt>Genre</dt><dd>Logic puzzle</dd></div>
+        <div><dt>Price</dt><dd>Free, with optional one-time purchases. No subscriptions, no loot boxes.</dd></div>
+        <div><dt>Content</dt><dd>500+ puzzles, 10 worlds, 28 characters, a daily puzzle</dd></div>
+        <div><dt>Plays offline</dt><dd>Yes</dd></div>
+        <div><dt>Languages</dt><dd>English. Store pages also in Spanish, Portuguese, French and German.</dd></div>
+        <div><dt>Age rating</dt><dd>App Store 9+</dd></div>
+        <div><dt>Press contact</dt><dd><a href="mailto:support@technicgames.com">support@technicgames.com</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about" style="padding-block:24px">
+    <div class="wrap">
+      <h2>About the game</h2>
+      <div class="prose">
+        <p>Pushlings is a cozy logic puzzle game about pushing crates and bending the rules. Every pad on the board holds a rule, and a crate pushed onto it switches that rule on: water turns into bridges, walls crumble into floor, goals appear. Players reshape each level to find their way to the goal.</p>
+        <p>There are more than 500 puzzles across 10 voxel worlds, from Meadow to Neon Circuit, each one checked by a solver to make sure it can be solved. Reaching the goal in par earns three stars, optional bits reward a closer look, and a new puzzle arrives every day.</p>
+        <p>Players collect 28 characters, the Pushlings, with stars, bits and daily streaks. Everything plays offline, with unlimited undo, one-tap restart and hints, and no timers or energy.</p>
+      </div>
+
+      <h3 style="margin-top:28px">Features</h3>
+      <ul class="pk-features">
+        <li><strong>Rule pads:</strong> push a crate onto a pad to switch its rule on, such as WATER → BRIDGE or WALL → FLOOR</li>
+        <li><strong>500+ puzzles,</strong> every one checked by a solver to be solvable</li>
+        <li><strong>10 worlds:</strong> Meadow, Sakura Garden, Coral Lagoon, Autumn Grove, Jungle Ruins, Snowy Peaks, Crystal Caverns, Desert Oasis, Ember Isle and Neon Circuit</li>
+        <li><strong>28 Pushlings</strong> to collect, from Shiba to Byte the code cube</li>
+        <li><strong>A daily puzzle</strong> with streaks, par stars and optional bits</li>
+        <li><strong>Game Center and Google Play Games</strong> achievements and leaderboards, with progress saved to iCloud or Play Games</li>
+        <li><strong>Fully offline;</strong> unlimited undo, restart and hints; no timers or energy</li>
+        <li><strong>Accessibility:</strong> follows the phone's Reduce Motion setting, a left-handed layout, swipe or on-screen arrows</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- TRAILER -->
+  <section class="section" id="trailer" style="padding-block:24px">
+    <div class="wrap">
+      <h2>Trailer</h2>
+      <div class="pk-video">
+        <video controls preload="none" width="1920" height="1080"
+               poster="keyart/Pushlings_KeyArt_3840x2160.jpg">
+          <source src="video/Pushlings_Trailer_1920x1080.mp4" type="video/mp4">
+          Your browser can't play embedded video — <a href="video/Pushlings_Trailer_1920x1080.mp4">download the trailer (MP4)</a>.
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENSHOTS -->
+  <section class="section" id="screenshots" style="padding-block:24px">
+    <div class="wrap">
+      <h2>Screenshots</h2>
+      <p class="pk-card__cap">Click any image to open the full-resolution file.</p>
+      <div class="pk-grid pk-grid--shots">
+        <a href="screenshots/Pushlings_Screenshot_01.jpg" target="_blank" rel="noopener"><img src="screenshots/Pushlings_Screenshot_01.jpg" alt="Pushlings screenshot 1" width="1320" height="2868" loading="lazy" decoding="async"></a>
+        <a href="screenshots/Pushlings_Screenshot_02.jpg" target="_blank" rel="noopener"><img src="screenshots/Pushlings_Screenshot_02.jpg" alt="Pushlings screenshot 2" width="1320" height="2868" loading="lazy" decoding="async"></a>
+        <a href="screenshots/Pushlings_Screenshot_03.jpg" target="_blank" rel="noopener"><img src="screenshots/Pushlings_Screenshot_03.jpg" alt="Pushlings screenshot 3" width="1320" height="2868" loading="lazy" decoding="async"></a>
+        <a href="screenshots/Pushlings_Screenshot_04.jpg" target="_blank" rel="noopener"><img src="screenshots/Pushlings_Screenshot_04.jpg" alt="Pushlings screenshot 4" width="1320" height="2868" loading="lazy" decoding="async"></a>
+        <a href="screenshots/Pushlings_Screenshot_05.jpg" target="_blank" rel="noopener"><img src="screenshots/Pushlings_Screenshot_05.jpg" alt="Pushlings screenshot 5" width="1320" height="2868" loading="lazy" decoding="async"></a>
+        <a href="screenshots/Pushlings_Screenshot_06.jpg" target="_blank" rel="noopener"><img src="screenshots/Pushlings_Screenshot_06.jpg" alt="Pushlings screenshot 6" width="1320" height="2868" loading="lazy" decoding="async"></a>
+        <a href="screenshots/Pushlings_Screenshot_07.jpg" target="_blank" rel="noopener"><img src="screenshots/Pushlings_Screenshot_07.jpg" alt="Pushlings screenshot 7" width="1320" height="2868" loading="lazy" decoding="async"></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORLDS -->
+  <section class="section" id="worlds" style="padding-block:24px">
+    <div class="wrap">
+      <h2>Worlds</h2>
+      <p class="pk-card__cap">Ten voxel worlds. Click to open full resolution.</p>
+      <div class="pk-grid pk-grid--worlds">
+        <a href="worlds/Pushlings_World_Meadow.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Meadow.jpg" alt="Meadow" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Meadow</b></span></a>
+        <a href="worlds/Pushlings_World_Sakura_Garden.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Sakura_Garden.jpg" alt="Sakura Garden" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Sakura Garden</b></span></a>
+        <a href="worlds/Pushlings_World_Coral_Lagoon.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Coral_Lagoon.jpg" alt="Coral Lagoon" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Coral Lagoon</b></span></a>
+        <a href="worlds/Pushlings_World_Autumn_Grove.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Autumn_Grove.jpg" alt="Autumn Grove" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Autumn Grove</b></span></a>
+        <a href="worlds/Pushlings_World_Jungle_Ruins.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Jungle_Ruins.jpg" alt="Jungle Ruins" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Jungle Ruins</b></span></a>
+        <a href="worlds/Pushlings_World_Snowy_Peaks.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Snowy_Peaks.jpg" alt="Snowy Peaks" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Snowy Peaks</b></span></a>
+        <a href="worlds/Pushlings_World_Crystal_Caverns.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Crystal_Caverns.jpg" alt="Crystal Caverns" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Crystal Caverns</b></span></a>
+        <a href="worlds/Pushlings_World_Desert_Oasis.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Desert_Oasis.jpg" alt="Desert Oasis" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Desert Oasis</b></span></a>
+        <a href="worlds/Pushlings_World_Ember_Isle.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Ember_Isle.jpg" alt="Ember Isle" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Ember Isle</b></span></a>
+        <a href="worlds/Pushlings_World_Neon_Circuit.jpg" target="_blank" rel="noopener"><img src="worlds/Pushlings_World_Neon_Circuit.jpg" alt="Neon Circuit" width="2400" height="1800" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Neon Circuit</b></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANIMATIONS -->
+  <section class="section" id="animations" style="padding-block:24px">
+    <div class="wrap">
+      <h2>Animated clips</h2>
+      <div class="pk-grid pk-grid--gifs">
+        <a href="gifs/Pushlings_rule_flip.gif" target="_blank" rel="noopener"><img src="gifs/Pushlings_rule_flip.gif" alt="A rule pad flipping water into a bridge" width="360" height="780" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Rule flip</b></span></a>
+        <a href="gifs/Pushlings_worlds.gif" target="_blank" rel="noopener"><img src="gifs/Pushlings_worlds.gif" alt="A tour through several Pushlings worlds" width="360" height="780" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Worlds</b></span></a>
+        <a href="gifs/Pushlings_characters.gif" target="_blank" rel="noopener"><img src="gifs/Pushlings_characters.gif" alt="A selection of collectible Pushlings characters" width="360" height="780" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Characters</b></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY ART -->
+  <section class="section" id="keyart" style="padding-block:24px">
+    <div class="wrap">
+      <h2>Key art</h2>
+      <p class="pk-card__cap">Click to open or right-click to save. Both logo and no-logo versions are included.</p>
+      <div class="pk-grid pk-grid--art">
+        <a href="keyart/Pushlings_KeyArt_2048x2048.jpg" target="_blank" rel="noopener"><img src="keyart/Pushlings_KeyArt_2048x2048.jpg" alt="Square key art" width="2048" height="2048" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Square</b> — 2048 × 2048</span></a>
+        <a href="keyart/Pushlings_KeyArt_1080x1920.jpg" target="_blank" rel="noopener"><img src="keyart/Pushlings_KeyArt_1080x1920.jpg" alt="Portrait key art" width="1080" height="1920" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Portrait</b> — 1080 × 1920</span></a>
+        <a href="keyart/Pushlings_KeyArt_3840x2160.jpg" target="_blank" rel="noopener"><img src="keyart/Pushlings_KeyArt_3840x2160.jpg" alt="Landscape key art" width="3840" height="2160" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Landscape 16:9</b> — 3840 × 2160</span></a>
+        <a href="keyart/Pushlings_KeyArt_3840x2160_NoLogo.jpg" target="_blank" rel="noopener"><img src="keyart/Pushlings_KeyArt_3840x2160_NoLogo.jpg" alt="Landscape key art without logo" width="3840" height="2160" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Landscape 16:9</b> — no logo</span></a>
+        <a href="keyart/Pushlings_KeyArt_4320x1080.jpg" target="_blank" rel="noopener"><img src="keyart/Pushlings_KeyArt_4320x1080.jpg" alt="Ultra-wide banner key art" width="4320" height="1080" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Ultra-wide banner</b> — 4320 × 1080</span></a>
+        <a href="keyart/Pushlings_KeyArt_4320x1080_NoLogo.jpg" target="_blank" rel="noopener"><img src="keyart/Pushlings_KeyArt_4320x1080_NoLogo.jpg" alt="Ultra-wide banner key art without logo" width="4320" height="1080" loading="lazy" decoding="async"><span class="pk-card__cap"><b>Ultra-wide banner</b> — no logo</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS -->
+  <section class="section" id="logos" style="padding-block:24px">
+    <div class="wrap">
+      <h2>Logos &amp; icon</h2>
+      <div class="pk-downloads">
+        <a class="pk-dl" href="logo/Pushlings_Logo.png" download>Logo (color) — PNG</a>
+        <a class="pk-dl" href="logo/Pushlings_Logo_Navy.png" download>Logo (navy) — PNG</a>
+        <a class="pk-dl" href="logo/Pushlings_Logo_White.png" download>Logo (white) — PNG</a>
+        <a class="pk-dl" href="logo/Pushlings_Icon_1024.png" download>App icon — 1024 PNG</a>
+        <a class="pk-dl" href="Pushlings_FactSheet.txt" download>Fact sheet — TXT</a>
+      </div>
+
+      <p class="pk-usage"><strong>Usage:</strong> All images, videos and logos may be used in coverage of Pushlings. For anything else, or for review codes and interview requests, email <a href="mailto:support@technicgames.com">support@technicgames.com</a>.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <span class="tier-rail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+  <div class="wrap">
+    <div class="footer__row">
+      <p class="footer__meta">© 2026 Technic Games. All rights reserved.</p>
+      <ul class="footer__links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../privacy.html">Privacy Policy</a></li>
+        <li><a href="../support.html#pushlings">Pushlings Support</a></li>
+      </ul>
+    </div>
+    <p class="footer__meta">Press contact: <a href="mailto:support@technicgames.com">support@technicgames.com</a></p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var btn = document.querySelector(".theme-toggle");
+  if (!btn) return;
+  var root = document.documentElement;
+  var meta = document.querySelector('meta[name="theme-color"]');
+  var META = { light: "#FCF9F4", dark: "#1A1320" };
+  function cur() { return root.getAttribute("data-theme") === "dark" ? "dark" : "light"; }
+  function apply(m) {
+    root.setAttribute("data-theme", m);
+    if (meta) meta.setAttribute("content", META[m]);
+    btn.setAttribute("aria-label", "Switch to " + (m === "dark" ? "light" : "dark") + " theme");
+    btn.setAttribute("title", btn.getAttribute("aria-label"));
+  }
+  apply(cur());
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    try { localStorage.setItem("tg-theme", next); } catch (e) {}
+    apply(next);
+  });
+})();
+</script>
+</body>
+</html>

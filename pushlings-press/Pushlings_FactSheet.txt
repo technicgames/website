@@ -1,0 +1,33 @@
+PUSHLINGS: FACT SHEET
+
+Developer: Technic Games
+Website: technicgames.com
+Release date: 16 November 2026, worldwide. Soft launch from 2 November 2026 in Canada, Australia and New Zealand
+Platforms: iPhone (iOS) and Android phones
+Genre: Logic puzzle
+Price: Free, with optional one-time purchases. No subscriptions, no loot boxes
+Content: 500+ puzzles, 10 worlds, 28 characters, a daily puzzle
+Plays offline: Yes
+Language: English. Store pages also in Spanish, Portuguese, French and German
+Age rating: App Store 9+
+Press contact: support@technicgames.com
+App Store: https://apps.apple.com/app/id6817405644
+Google Play: https://play.google.com/store/apps/details?id=com.technicgames.pushlings
+
+Pushlings is a cozy logic puzzle game about pushing crates and bending the rules. Every pad on the board holds a rule, and a crate pushed onto it switches that rule on: water turns into bridges, walls crumble into floor, goals appear. Players reshape each level to find their way to the goal.
+
+There are more than 500 puzzles across 10 voxel worlds, from Meadow to Neon Circuit, each one checked by a solver to make sure it can be solved. Reaching the goal in par earns three stars, optional bits reward a closer look, and a new puzzle arrives every day.
+
+Players collect 28 characters, the Pushlings, with stars, bits and daily streaks. Everything plays offline, with unlimited undo, one-tap restart and hints, and no timers or energy.
+
+FEATURES
+- Rule pads: push a crate onto a pad to switch its rule on, such as WATER → BRIDGE or WALL → FLOOR
+- 500+ puzzles, every one checked by a solver to be solvable
+- 10 worlds: Meadow, Sakura Garden, Coral Lagoon, Autumn Grove, Jungle Ruins, Snowy Peaks, Crystal Caverns, Desert Oasis, Ember Isle and Neon Circuit
+- 28 Pushlings to collect, from Shiba to Byte the code cube
+- A daily puzzle with streaks, par stars and optional bits
+- Game Center and Google Play Games achievements and leaderboards, with progress saved to iCloud or Play Games
+- Fully offline; unlimited undo, restart and hints; no timers or energy
+- Accessibility: follows the phone's Reduce Motion setting, a left-handed layout, swipe or on-screen arrows
+
+All images, videos and logos may be used in coverage of Pushlings.
