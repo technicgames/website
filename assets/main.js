@@ -5,18 +5,22 @@
      3) sticky-header state + back-to-top  (ONE rAF-throttled listener)
      4) in-page scrollspy
      5) scroll reveal
-     6) renders window.GAMES into #games-list, with a screenshot
-        carousel and a progressive lightbox
-     7) structured data, generated from the same GAMES array
+     6) footer game links + launch bar, from window.GAMES (every page)
+     7) featured launch: countdown, store slots, worlds strip, trailer
+     8) hero parallax
+     9) renders window.GAMES into #games-list: filterable cards, and a
+        details sheet with a screenshot carousel and a progressive lightbox
+    10) structured data, generated from the same GAMES array
 
    No dependencies. Works from file:// and from a static server.
    Everything is progressive enhancement: with JS off, or without
    <dialog> / IntersectionObserver, the page still reads and works.
 
    Performance rules enforced here (see PERFORMANCE.md):
-     - exactly one scroll listener, passive, rAF-throttled
+     - exactly one window scroll listener, passive, rAF-throttled
      - carousel geometry is measured on resize, never per scroll event
      - no layout reads inside scroll handlers beyond scrollY/scrollLeft
+     - the countdown and the worlds strip only run while on screen
    ============================================================= */
 (function () {
   "use strict";
@@ -25,6 +29,7 @@
   var scrollBehavior = function () {
     return reduceMotion.matches ? "auto" : "smooth";
   };
+  var GAMES = Array.isArray(window.GAMES) ? window.GAMES : [];
 
   /** Build an element. `text` sets textContent — never innerHTML. */
   function el(tag, attrs, kids) {
@@ -37,7 +42,7 @@
       });
     }
     (kids || []).forEach(function (kid) {
-      if (kid) node.appendChild(kid);
+      if (kid) node.appendChild(typeof kid === "string" ? document.createTextNode(kid) : kid);
     });
     return node;
   }
@@ -63,6 +68,7 @@
 
   var ICON_PREV = ["M15 5l-7 7 7 7"];
   var ICON_NEXT = ["M9 5l7 7-7 7"];
+  var ICON_ARROW = ["M5 12h14", "M13 6l6 6-6 6"];
   var ICON_CLOSE = ["M6 6l12 12", "M18 6L6 18"];
   var ICON_UP = ["M12 19V5", "M5 12l7-7 7 7"];
   var ICON_MOON = ["M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"];
@@ -72,6 +78,83 @@
     "M1.8 12h2.1", "M20.1 12h2.1", "M4.8 19.2l1.5-1.5", "M17.7 6.3l1.5-1.5"
   ];
 
+  /* ---------- Game data helpers (shared by every section below) ---------- */
+
+  /** Only ever emit http(s) links — never javascript:, data:, etc. */
+  function safeUrl(value) {
+    if (typeof value !== "string") return "";
+    var url = value.trim();
+    return /^https?:\/\//i.test(url) ? url : "";
+  }
+
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+    "August", "September", "October", "November", "December"];
+
+  /** Local midnight of `releaseDate`, or 0 when the game has none. */
+  function launchAt(game) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(game.releaseDate || "");
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]).getTime() : 0;
+  }
+  function isReleased(game) { return Date.now() >= launchAt(game); }
+  function longDate(game) {
+    var d = new Date(launchAt(game));
+    return d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
+  }
+  function shortDate(game) {
+    var d = new Date(launchAt(game));
+    return d.getDate() + " " + MONTHS[d.getMonth()].slice(0, 3);
+  }
+
+  /** A store link counts only once the game's release date has passed. */
+  function storeUrl(game, key) { return isReleased(game) ? safeUrl(game[key]) : ""; }
+
+  function status(game) {
+    if (storeUrl(game, "ios") || storeUrl(game, "android")) return { key: "out", cls: "tag--out", text: "Out now" };
+    if (launchAt(game) && !isReleased(game)) return { key: "soon", cls: "tag--date", text: "Arrives " + shortDate(game) };
+    return { key: "soon", cls: "tag--soon", text: "Coming soon" };
+  }
+
+  function byId(id) {
+    for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id) return GAMES[i];
+    return null;
+  }
+
+  var STORES = [
+    { key: "ios", name: "App Store", badge: "assets/appstore.svg", alt: "Download on the App Store", w: 144, h: 48 },
+    { key: "android", name: "Google Play", badge: "assets/googleplay.svg", alt: "Get it on Google Play", w: 161, h: 48 }
+  ];
+
+  /** One platform, rendered independently of the other. */
+  function storeSlot(store, game) {
+    var url = storeUrl(game, store.key);
+
+    if (!url) {
+      // Non-interactive, badge-shaped. Reads as "Coming soon, App Store".
+      return el("span", { class: "chip" }, [
+        el("span", { class: "chip__dot", "aria-hidden": "true" }),
+        el("span", { class: "chip__text" }, [
+          el("span", { class: "chip__kicker", text: "Coming soon" }),
+          el("span", { class: "chip__name", text: store.name })
+        ])
+      ]);
+    }
+
+    return el("a", { class: "badge", href: url, target: "_blank", rel: "noopener" }, [
+      el("img", {
+        src: store.badge,
+        alt: store.alt,
+        width: store.w,
+        height: store.h,
+        loading: "lazy",
+        decoding: "async"
+      })
+    ]);
+  }
+
+  function stores(game) {
+    return el("div", { class: "stores" }, STORES.map(function (s) { return storeSlot(s, game); }));
+  }
+
   /* ---------- 1. Theme ----------
      <head> already resolved the theme before first paint (stored pref, else
      system) and stamped data-theme on <html>. This only handles switching. */
@@ -80,7 +163,7 @@
     if (!btn) return;
 
     var KEY = "tg-theme";
-    var META = { light: "#FCF9F4", dark: "#1A1320" };
+    var META = { light: "#FCF9F4", dark: "#120D16" };
     var root = document.documentElement;
     var meta = document.querySelector('meta[name="theme-color"]');
     var system = window.matchMedia("(prefers-color-scheme: dark)");
@@ -251,7 +334,194 @@
     };
   })();
 
-  observeReveal(document); // must run before the #games-list guard below
+  observeReveal(document);
+
+  /** Run `fn(true/false)` as `node` enters / leaves the viewport. */
+  function whileVisible(node, fn) {
+    if (!("IntersectionObserver" in window)) { fn(true); return; }
+    new IntersectionObserver(function (entries) {
+      fn(entries[entries.length - 1].isIntersecting);
+    }).observe(node);
+  }
+
+  /* ---------- 6. Footer game links + launch bar (every page) ---------- */
+  (function footerGames() {
+    var list = document.getElementById("footer-games");
+    if (!list) return;
+    GAMES.forEach(function (g) {
+      list.appendChild(el("li", null, [
+        el("a", { href: "index.html#game-" + g.id, text: g.title.split(":")[0] })
+      ]));
+    });
+  })();
+
+  (function announce() {
+    var bar = document.getElementById("announce");
+    if (!bar) return;
+    var MONTH = 30 * 864e5;
+    var game = GAMES.filter(function (g) {
+      var t = launchAt(g);
+      return t && Date.now() < t + MONTH;   // upcoming, or launched within a month
+    })[0];
+    if (!game) return;
+
+    var out = isReleased(game);
+    bar.replaceChildren(
+      el("span", { class: "announce__dot", "aria-hidden": "true" }),
+      out ? "New: " : "New game: ",
+      el("strong", { text: game.title }),
+      out ? " is out now · " : " launches " + longDate(game) + " · ",
+      el("a", { href: "#" + (document.getElementById(game.id) ? game.id : "game-" + game.id),
+                text: out ? "Get it now" : "See what's coming" })
+    );
+    bar.hidden = false;
+  })();
+
+  /* Small status texts in the hand-curated hero, kept true by the data. */
+  (function heroStatus() {
+    document.querySelectorAll("[data-status-of]").forEach(function (n) {
+      var g = byId(n.getAttribute("data-status-of"));
+      if (!g) return;
+      var s = status(g);
+      n.textContent = s.text;
+      n.classList.toggle("is-live", s.key === "out");
+    });
+    var count = document.querySelector("[data-game-count]");
+    if (count && GAMES.length) count.textContent = String(GAMES.length);
+  })();
+
+  /* ---------- 7. Featured launch ---------- */
+  (function featured() {
+    var box = document.querySelector("[data-featured]");
+    var game = box && byId(box.getAttribute("data-featured"));
+    if (!game) return;
+
+    var eyebrow = box.querySelector("[data-eyebrow]");
+    var count = box.querySelector("[data-countdown]");
+    var storeBox = box.querySelector("[data-stores]");
+    var cells = {};
+    box.querySelectorAll("[data-cd]").forEach(function (n) { cells[n.getAttribute("data-cd")] = n; });
+
+    function paintState() {
+      var out = isReleased(game);
+      if (eyebrow) eyebrow.textContent = out ? "New game · Out now" : "New game · Coming soon";
+      if (count) count.hidden = out;
+      if (storeBox) {
+        var fresh = stores(game);
+        storeBox.replaceWith(fresh);
+        storeBox = fresh;
+      }
+      return out;
+    }
+
+    if (paintState() || !count) return;
+
+    var timer = 0;
+    var last = {};
+    function pad(n) { return n < 10 ? "0" + n : String(n); }
+    function tick() {
+      var s = Math.max(0, Math.floor((launchAt(game) - Date.now()) / 1000));
+      var next = { d: String(Math.floor(s / 86400)), h: pad(Math.floor(s / 3600) % 24), m: pad(Math.floor(s / 60) % 60), s: pad(s % 60) };
+      Object.keys(next).forEach(function (k) {
+        if (cells[k] && last[k] !== next[k]) cells[k].textContent = next[k];   // write only on change
+      });
+      last = next;
+      if (s === 0) { clearInterval(timer); timer = 0; paintState(); }
+    }
+    tick();
+    // Only tick while the banner is on screen.
+    whileVisible(box, function (on) {
+      if (on && !timer && !isReleased(game)) { tick(); timer = setInterval(tick, 1000); }
+      if (!on && timer) { clearInterval(timer); timer = 0; }
+    });
+  })();
+
+  (function worlds() {
+    var strip = document.querySelector("[data-marquee]");
+    if (!strip || reduceMotion.matches) return;   // stays a plain swipeable row
+    var track = strip.querySelector(".marquee__track");
+    var toggle = document.querySelector("[data-marquee-toggle]");
+
+    // A second copy makes the loop seamless; it is hidden from assistive tech.
+    Array.prototype.slice.call(track.children).forEach(function (li) {
+      var copy = li.cloneNode(true);
+      copy.setAttribute("aria-hidden", "true");
+      track.appendChild(copy);
+    });
+    strip.classList.add("is-marquee");
+
+    var userPaused = false;
+    var offscreen = false;
+    function sync() { strip.classList.toggle("is-paused", userPaused || offscreen); }
+
+    // Moving content needs a way to stop it (WCAG 2.2.2).
+    if (toggle) {
+      toggle.hidden = false;
+      toggle.addEventListener("click", function () {
+        userPaused = !userPaused;
+        toggle.setAttribute("aria-pressed", String(userPaused));
+        toggle.textContent = userPaused ? "Play" : "Pause";
+        sync();
+      });
+    }
+    whileVisible(strip, function (on) { offscreen = !on; sync(); });
+  })();
+
+  (function trailer() {
+    var dlg = document.getElementById("trailer");
+    if (!dlg || typeof dlg.showModal !== "function") return;   // links fall back to the MP4
+    var video = dlg.querySelector("video");
+    var close = dlg.querySelector(".vmodal__close");
+    close.appendChild(icon(ICON_CLOSE));
+
+    document.querySelectorAll("[data-trailer]").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        dlg.showModal();
+        var p = video.play();   // inside the click, so it counts as a user gesture
+        if (p && p.catch) p.catch(function () { /* autoplay refused: controls remain */ });
+      });
+    });
+    close.addEventListener("click", function () { dlg.close(); });
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener("close", function () { video.pause(); });
+  })();
+
+  /* ---------- 8. Hero parallax ----------
+     Pointer only, never touch, never with Reduce Motion. The stage rect is
+     cached on enter/resize, so pointermove does no layout reads. */
+  (function parallax() {
+    var hero = document.querySelector(".hero");
+    var stage = hero && hero.querySelector(".stage");
+    if (!stage || reduceMotion.matches || !window.matchMedia("(pointer: fine)").matches) return;
+
+    var phones = stage.querySelectorAll("[data-depth]");
+    var rect = null;
+    var raf = 0;
+    var px = 0;
+    var py = 0;
+
+    function measure() { rect = stage.getBoundingClientRect(); }
+    function paint() {
+      raf = 0;
+      phones.forEach(function (p) {
+        var d = +p.getAttribute("data-depth");
+        p.style.transform = "translate(" + (px * d).toFixed(1) + "px, " + (py * d).toFixed(1) + "px) var(--tilt)";
+      });
+    }
+
+    hero.addEventListener("pointerenter", measure);
+    window.addEventListener("resize", function () { rect = null; });
+    hero.addEventListener("pointermove", function (e) {
+      if (!rect) measure();
+      px = (e.clientX - rect.left) / rect.width - 0.5;
+      py = (e.clientY - rect.top) / rect.height - 0.5;
+      if (!raf) raf = requestAnimationFrame(paint);
+    });
+    hero.addEventListener("pointerleave", function () {
+      phones.forEach(function (p) { p.style.transform = ""; });
+    });
+  })();
 
   /* ---------- Lightbox ---------- */
   var lightbox = (function () {
@@ -334,59 +604,20 @@
     };
   })();
 
-  /* ---------- 6. Game cards ---------- */
+  /* ---------- 9. Game cards ---------- */
   var mount = document.getElementById("games-list");
-  if (!mount || !Array.isArray(window.GAMES)) return;
-
-  /** Only ever emit http(s) links — never javascript:, data:, etc. */
-  function safeUrl(value) {
-    if (typeof value !== "string") return "";
-    var url = value.trim();
-    return /^https?:\/\//i.test(url) ? url : "";
-  }
-
-  var STORES = [
-    { key: "ios", name: "App Store", badge: "assets/appstore.svg", alt: "Download on the App Store", w: 144, h: 48 },
-    { key: "android", name: "Google Play", badge: "assets/googleplay.svg", alt: "Get it on Google Play", w: 161, h: 48 }
-  ];
+  if (!mount || !GAMES.length) return;
 
   // Intrinsic size of the thumbnails written by tools/optimize-assets.py.
   // Present so the browser reserves the box before the image lands (zero CLS).
   var THUMB_W = 440;
   var THUMB_H = 952;
 
-  /** One platform, rendered independently of the other. */
-  function storeSlot(store, rawUrl) {
-    var url = safeUrl(rawUrl);
-
-    if (!url) {
-      // Non-interactive, badge-shaped. Reads as "Coming soon, App Store".
-      return el("span", { class: "chip" }, [
-        el("span", { class: "chip__dot", "aria-hidden": "true" }),
-        el("span", { class: "chip__text" }, [
-          el("span", { class: "chip__kicker", text: "Coming soon" }),
-          el("span", { class: "chip__name", text: store.name })
-        ])
-      ]);
-    }
-
-    return el("a", { class: "badge", href: url, target: "_blank", rel: "noopener" }, [
-      el("img", {
-        src: store.badge,
-        alt: store.alt,
-        width: store.w,
-        height: store.h,
-        loading: "lazy",
-        decoding: "async"
-      })
-    ]);
-  }
-
   /** Game logo. Decorative by default — the title is announced right after it. */
   function gameIcon(game) {
     if (!game.icon) return null;
     return el("img", {
-      class: "game__icon",
+      class: "gcard__icon",
       src: game.icon,
       alt: game.iconAlt || "",
       width: 192,
@@ -396,6 +627,12 @@
     });
   }
 
+  function pill(game) {
+    var s = status(game);
+    return el("span", { class: "tag " + s.cls, text: s.text });
+  }
+
+  /** The screenshot carousel. Returns the node plus a cleanup for its observer. */
   function screenshots(game) {
     var shots = game.screenshots || [];
     if (!shots.length) return null;
@@ -504,62 +741,151 @@
       t = setTimeout(sync, 60);
     }, { passive: true });
 
-    if ("ResizeObserver" in window) new ResizeObserver(remeasure).observe(viewport);
+    var ro = null;
+    if ("ResizeObserver" in window) { ro = new ResizeObserver(remeasure); ro.observe(viewport); }
     else window.addEventListener("resize", remeasure);
 
     requestAnimationFrame(remeasure);
-    return wrap;
+    return {
+      node: wrap,
+      destroy: function () { if (ro) ro.disconnect(); else window.removeEventListener("resize", remeasure); }
+    };
   }
 
+  /* The details sheet: one <dialog>, refilled per game. Thumbnails inside it
+     only download when it opens. */
+  var sheet = (function () {
+    var dlg = document.getElementById("game-sheet");
+    if (!dlg || typeof dlg.showModal !== "function") return null;
+    var opener = null;
+    var carousel = null;
+
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener("close", function () {
+      if (carousel) carousel.destroy();
+      carousel = null;
+      dlg.replaceChildren();
+      if (opener && document.contains(opener)) opener.focus();
+    });
+
+    return function open(game, fromEl) {
+      opener = fromEl;
+      carousel = screenshots(game);
+      var close = el("button", { type: "button", class: "icon-btn sheet__close", "aria-label": "Close" }, [icon(ICON_CLOSE)]);
+      close.addEventListener("click", function () { dlg.close(); });
+
+      dlg.style.setProperty("--c", game.color || "");
+      dlg.setAttribute("aria-labelledby", "sheet-title");
+      dlg.replaceChildren(close, el("div", { class: "sheet__in" }, [
+        el("div", null, [
+          el("div", { class: "sheet__head" }, [
+            gameIcon(game),
+            el("div", null, [
+              pill(game),
+              el("h3", { id: "sheet-title", text: game.title }),
+              el("p", { class: "game__one", text: game.oneLiner || "" })
+            ])
+          ]),
+          el("p", { class: "sheet__desc", text: game.description || "" }),
+          el("ul", { class: "features" }, (game.features || []).map(function (f) {
+            return el("li", { text: f });
+          })),
+          stores(game)
+        ]),
+        carousel && carousel.node
+      ]));
+      dlg.showModal();
+      close.focus();
+    };
+  })();
+
   function card(game) {
-    var isOut = Boolean(safeUrl(game.ios) || safeUrl(game.android));
+    var s = status(game);
     var titleId = "game-" + game.id + "-title";
+    var shots = game.screenshots || [];
+    var hero = shots[(game.cardShot || 1) - 1] || shots[0];
 
-    var head = el("header", { class: "game__head" }, [
-      gameIcon(game),
-      el("div", { class: "game__headings" }, [
-        el("p", {
-          class: "tag " + (isOut ? "tag--out" : "tag--soon"),
-          text: isOut ? "Out now" : "Coming soon"
-        }),
-        el("h3", { class: "game__title", id: titleId, text: game.title }),
-        el("p", { class: "game__one", text: game.oneLiner || "" })
-      ])
+    var actions = el("div", { class: "gcard__actions" });
+    if (s.key === "out") actions.appendChild(stores(game));
+    if (sheet) {
+      var more = el("button", { type: "button", class: "more", "aria-haspopup": "dialog" }, [
+        "Details",
+        el("span", { class: "sr-only", text: " about " + game.title }),
+        icon(ICON_ARROW)
+      ]);
+      more.addEventListener("click", function () { sheet(game, more); });
+      actions.appendChild(more);
+    }
+
+    var text = el("div", { class: "gcard__text" }, [
+      el("div", { class: "gcard__top" }, [gameIcon(game), pill(game)]),
+      el("h3", { id: titleId, text: game.title }),
+      el("p", { class: "game__one", text: game.oneLiner || "" }),
+      (game.tags || []).length ? el("ul", { class: "gcard__tags" }, game.tags.map(function (t) {
+        return el("li", { text: t });
+      })) : null,
+      // No <dialog>: show the details in the card instead of hiding them.
+      sheet ? null : el("p", { class: "sheet__desc", text: game.description || "" }),
+      actions
     ]);
 
-    var body = el("div", { class: "game__body" }, [
-      el("p", { class: "game__desc", text: game.description || "" }),
-      el("ul", { class: "features" }, (game.features || []).map(function (f) {
-        return el("li", { text: f });
-      })),
-      el("div", { class: "stores" }, STORES.map(function (store) {
-        return storeSlot(store, game[store.key]);
-      }))
-    ]);
-
-    return el("article", {
-      class: "game",
+    var node = el("article", {
+      class: "gcard",
       id: "game-" + game.id,
       "aria-labelledby": titleId,
+      "data-status": s.key,
       "data-reveal": ""
-    }, [el("div", { class: "game__text" }, [head, body]), screenshots(game)]);
+    }, [
+      text,
+      hero ? el("div", { class: "gcard__phone", "aria-hidden": "true" }, [
+        el("img", { src: hero.thumb || hero.src, alt: "", width: THUMB_W, height: THUMB_H, loading: "lazy", decoding: "async" })
+      ]) : null
+    ]);
+    if (game.color) node.style.setProperty("--c", game.color);
+    return node;
   }
 
   var frag = document.createDocumentFragment();
-  window.GAMES.forEach(function (game) { frag.appendChild(card(game)); });
+  GAMES.forEach(function (game) { frag.appendChild(card(game)); });
   mount.appendChild(frag);
-
   observeReveal(mount);
 
-  /* ---------- 7. Structured data, from the same source of truth ---------- */
+  /* Filter chips: counts derived from the data, so they can't go stale. */
+  (function filters() {
+    var box = document.getElementById("game-filters");
+    var live = document.getElementById("games-live");
+    if (!box) return;
+    var cards = mount.querySelectorAll(".gcard");
+    var counts = { all: cards.length, out: 0, soon: 0 };
+    cards.forEach(function (c) { counts[c.getAttribute("data-status")]++; });
+    if (!counts.out || !counts.soon) return;   // one bucket only: nothing to filter
+
+    [["all", "All"], ["out", "Out now"], ["soon", "Coming soon"]].forEach(function (f) {
+      var b = el("button", { type: "button", "aria-pressed": String(f[0] === "all") }, [
+        f[1], el("span", { text: String(counts[f[0]]) })
+      ]);
+      b.addEventListener("click", function () {
+        box.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        cards.forEach(function (c) {
+          c.hidden = !(f[0] === "all" || c.getAttribute("data-status") === f[0]);
+          c.classList.add("is-in");   // never leave a filtered-in card unrevealed
+        });
+        if (live) live.textContent = "Showing " + counts[f[0]] + " game" + (counts[f[0]] === 1 ? "" : "s");
+      });
+      box.appendChild(b);
+    });
+    box.hidden = false;
+  })();
+
+  /* ---------- 10. Structured data, from the same source of truth ---------- */
   (function schema() {
     if (!/^https?:$/.test(location.protocol)) return; // file:// yields junk URLs
     var abs = function (p) { return new URL(p, location.href).href; };
 
-    var games = window.GAMES.map(function (g) {
+    var games = GAMES.map(function (g) {
       var platforms = [];
-      if (safeUrl(g.ios)) platforms.push("iOS");
-      if (safeUrl(g.android)) platforms.push("Android");
+      if (storeUrl(g, "ios")) platforms.push("iOS");
+      if (storeUrl(g, "android")) platforms.push("Android");
 
       var node = {
         "@type": "VideoGame",
@@ -569,7 +895,7 @@
       };
       if (g.icon) node.image = abs(g.icon);
       if (platforms.length) node.operatingSystem = platforms.join(", ");
-      var install = safeUrl(g.android) || safeUrl(g.ios);
+      var install = storeUrl(g, "android") || storeUrl(g, "ios");
       if (install) node.installUrl = install;
       return node;
     });

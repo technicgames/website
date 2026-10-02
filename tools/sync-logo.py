@@ -22,6 +22,14 @@ logo.svg, run this (or optimize-assets.py, which calls it), and you're done.
 
 The file itself stays on disk: it's what the JSON-LD `logo` points at, and what
 you hand to press.
+
+The footer copy
+---------------
+The footer is dark in BOTH themes, so its logo never has to follow the theme.
+That one is written to assets/logo-on-dark.svg (the two theme-dependent paints
+baked to light colours) and used as an ordinary lazy <img>: a second inline copy
+would cost another ~5 KB gzipped on every page and duplicate every id. It is
+generated here too, so replacing logo.svg updates both.
 """
 import argparse
 import os
@@ -47,8 +55,16 @@ REPAINT = {
     "gray": "var(--muted)",
 }
 
+# The footer copy: same two paints, fixed for a dark background. Keep these in
+# step with --footer-fg / --footer-meta in assets/styles.css.
+ON_DARK = "assets/logo-on-dark.svg"
+ON_DARK_PAINT = {
+    "#4d4d4d": "#f6f1f8",
+    "gray": "#b4a6bc",
+}
 
-def build():
+
+def load():
     svg = open(SRC, encoding="utf-8").read()
 
     if "<text" in svg:
@@ -59,8 +75,28 @@ def build():
     svg, _ = normalize_filter_regions(svg)
 
     vb = re.search(r'viewBox="([\d.\s-]+)"', svg).group(1).split()
-    vw, vh = float(vb[2]), float(vb[3])
+    return svg, float(vb[2]), float(vb[3])
 
+
+def build_on_dark():
+    """assets/logo-on-dark.svg: a standalone file, so ids and classes need no
+    namespacing — an <img>'d SVG is its own document."""
+    svg, vw, vh = load()
+    svg = drop_plate(svg, vw, vh)
+    for old, new in ON_DARK_PAINT.items():
+        svg = re.sub(rf"(fill|stroke):\s*{re.escape(old)}\s*;", rf"\1: {new};", svg)
+    svg = re.sub(r"^<\?xml[^>]*>\s*", "", svg)
+    return ("<!-- GENERATED from assets/logo.svg by tools/sync-logo.py. Do not edit by hand. -->\n"
+            + svg.strip() + "\n")
+
+
+def build():
+    svg, vw, vh = load()
+    svg = drop_plate(svg, vw, vh)
+    return inline_block(svg, vw, vh)
+
+
+def drop_plate(svg, vw, vh):
     # 1. Drop any full-canvas background rect (an artboard leftover). Remember
     #    its class so we can delete the now-dead style rule too.
     plate_classes = set()
@@ -84,7 +120,10 @@ def build():
     #     unprefixed `.cls-12` rule inside a document-global <style>.
     for cls in plate_classes:
         svg = re.sub(rf"\.{re.escape(cls)}\s*\{{[^}}]*\}}", "", svg)
+    return svg
 
+
+def inline_block(svg, vw, vh):
     # 2. Namespace every id, and every url(#id) that points at one.
     ids = re.findall(r'id="([^"]+)"', svg)
     for i in ids:
@@ -163,6 +202,13 @@ def main():
             stale.append(page)
             if not args.check:
                 open(page, "w", encoding="utf-8").write(new)
+
+    dark = build_on_dark()
+    current = open(ON_DARK, encoding="utf-8").read() if os.path.exists(ON_DARK) else ""
+    if dark != current:
+        stale.append(ON_DARK)
+        if not args.check:
+            open(ON_DARK, "w", encoding="utf-8").write(dark)
 
     if args.check:
         if stale:

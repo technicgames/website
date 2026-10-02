@@ -5,8 +5,9 @@ Technic Games — asset optimiser.
 NOT part of the site build. The site has no build step; this is a one-off you
 run by hand whenever you drop new source art in for a game.
 
-    python3 tools/optimize-assets.py            # all games
+    python3 tools/optimize-assets.py            # all games + the Pushlings banner art
     python3 tools/optimize-assets.py lbs         # just one game (by prefix)
+    python3 tools/optimize-assets.py art         # just the banner art (see ART)
 
 For each game it writes the exact files assets/games.js references:
 
@@ -58,6 +59,33 @@ GAMES = [
         # five; these are the three that tell the whole story on their own.
         "screenshots": ["pnd/Shot 1.png", "pnd/Shot 2.png", "pnd/Shot 3.png"],
     },
+    {
+        # Pushlings' masters live in its press kit (pushlings-press/), which is
+        # served as-is at /pushlings-press/. Read from there; never copy them.
+        "prefix": "pl",
+        "icon": "../pushlings-press/images/logo/Pushlings_Icon_1024.png",
+        "screenshots": [
+            "../pushlings-press/images/screenshots/Pushlings_Screenshot_01.jpg",
+            "../pushlings-press/images/screenshots/Pushlings_Screenshot_02.jpg",
+            "../pushlings-press/images/screenshots/Pushlings_Screenshot_04.jpg",
+            "../pushlings-press/images/screenshots/Pushlings_Screenshot_05.jpg",
+        ],
+    },
+]
+
+# One-off art for the home page's featured-launch banner. Same rules: the site
+# references only these outputs, never the multi-megabyte masters.
+#   (source relative to assets/, output name, max width, mode)
+PL = "../pushlings-press/images/"
+ART = [
+    (PL + "keyart/Pushlings_KeyArt_3840x2160_NoLogo.jpg", "pl-keyart-1920.webp", 1920, "RGB"),
+    (PL + "keyart/Pushlings_KeyArt_3840x2160_NoLogo.jpg", "pl-keyart-960.webp", 960, "RGB"),
+    (PL + "logo/Pushlings_Logo_White.png", "pl-logo-white.webp", 900, "RGBA"),
+] + [
+    # worlds strip: 220 CSS px wide on desktop, 2x
+    (PL + f"worlds/Pushlings_World_{w}.jpg", f"pl-world-{w.lower().replace('_', '-')}.webp", 440, "RGB")
+    for w in ("Meadow", "Sakura_Garden", "Coral_Lagoon", "Autumn_Grove", "Jungle_Ruins",
+              "Snowy_Peaks", "Crystal_Caverns", "Desert_Oasis", "Ember_Isle", "Neon_Circuit")
 ]
 
 THUMB_W = 440    # card: 220 CSS px box, 2x
@@ -115,16 +143,34 @@ def process(game):
     return before, after, rows
 
 
+def process_art():
+    before = after = 0
+    rows = []
+    for rel, name, width, mode in ART:
+        src, im = load_image(rel)
+        before += os.path.getsize(src)
+        size, dims = save_webp(im, os.path.join(A, name), width, mode)
+        after += size
+        rows.append((name, dims, size))
+    return before, after, rows
+
+
 def main():
     wanted = sys.argv[1:]
     games = [g for g in GAMES if not wanted or g["prefix"] in wanted]
-    if wanted and not games:
-        sys.exit(f"no game with prefix {wanted}; known: {[g['prefix'] for g in GAMES]}")
+    do_art = not wanted or "art" in wanted
+    if wanted and not games and not do_art:
+        sys.exit(f"no game with prefix {wanted}; known: {[g['prefix'] for g in GAMES]} or 'art'")
 
     total_before = total_after = 0
     all_rows = []
     for game in games:
         before, after, rows = process(game)
+        total_before += before
+        total_after += after
+        all_rows.extend(rows)
+    if do_art:
+        before, after, rows = process_art()
         total_before += before
         total_after += after
         all_rows.extend(rows)

@@ -7,12 +7,13 @@ These are the rules. There are two commands and six rules.
 ## The commands
 
 ```sh
-# After dropping new art into assets/ (screenshots, icon):
+# After dropping new art into assets/ (screenshots, icon), or replacing
+# anything in the Pushlings press kit (pushlings-press/images/):
 python3 tools/optimize-assets.py
 
 # After replacing assets/logo.svg:
 python3 tools/outline-logo.py --apply   # bake the wordmark into paths
-python3 tools/sync-logo.py              # regenerate the inline <svg> in all 3 pages
+python3 tools/sync-logo.py              # regenerate the inline <svg> in all 3 pages + the footer logo
 
 # Before every deploy:
 sh tools/check-budget.sh     # bytes:      fails if any bucket is over
@@ -27,21 +28,38 @@ checking — a naive `grep -c 'transition: all' assets/styles.css` returns 2, be
 it matches the two comments telling you *not* to write `transition: all`. Don't
 hand-roll these greps; run the linter.
 
-## Current first view (home page)
+## Current page weight (home page)
+
+Above the fold — what the first screen needs:
 
 | Bucket | Actual | Budget |
 | --- | --- | --- |
-| HTML + CSS + JS, gzipped | 20.4 KB | 24 KB |
+| HTML + CSS + JS, gzipped | 37 KB | 40 KB |
 | Fonts (woff2, latin) | 76 KB | 80 KB |
-| Hero image (the LCP element) | 24 KB | 40 KB |
-| Logo, gzipped | 2.3 KB | 4 KB |
-| Screenshot thumbnails | 89 KB | 100 KB |
-| Game icon | 3.9 KB | 10 KB |
-| **Total** | **215 KB** | **260 KB** |
+| Hero phones (3 screenshots; the centre one is the LCP) | 58 KB | 80 KB |
+| Game icons | 13 KB | 20 KB |
+| **Total above the fold** | **185 KB** | **220 KB** |
 
-Not counted, because a first-time visitor never downloads them: `fsm-*-full.webp`
-(lightbox only), `og-image.png` (social crawlers only), `fsm-*.jpg` and
-`fsm-icon.svg` (sources, never referenced).
+Below the fold — lazy, loads as you scroll:
+
+| Bucket | Actual | Budget |
+| --- | --- | --- |
+| Game card screenshots (one per game) | 85 KB | 150 KB |
+| Pushlings key art + logo | 66 KB | 80 KB |
+| Worlds strip (10 tiles) | 80 KB | 100 KB |
+| Footer logo, gzipped | 5 KB | 8 KB |
+| **Total whole page** | **421 KB** | **560 KB** |
+
+The code bucket was raised from 30 KB to 40 KB, deliberately, for the 2026
+redesign (launch banner, worlds strip, values, studio/press panels, full footer,
+a fourth game). Every other number came *down* for the first screen: the old
+hero image is gone and the details-sheet screenshots no longer load up front.
+
+Not counted, because a visitor only downloads them on request: the details
+sheet's screenshots (when it opens), `*-full.webp` (lightbox), the trailer
+(`preload="none"`), `og-image.png` (social crawlers), and the press kit, which is
+its own page. Sources (`*.jpg`, `fsm-icon.svg`, `assets/lbs/`, `assets/pnd/`,
+`pushlings-press/images/`) are never referenced by the home page.
 
 ---
 
@@ -56,6 +74,11 @@ writes:
 - `fsm-N-thumb.webp` — 440 px wide, loads with the card
 - `fsm-N-full.webp` — 1080 px wide, loads *only* when the lightbox opens
 - `fsm-icon.webp` — 192 px
+
+Pushlings is the same, except its masters live in the press kit
+(`pushlings-press/images/`), which is served as-is at `/pushlings-press/`. The
+optimiser reads them from there and writes `pl-*.webp` (screenshots, icon, key
+art, logo, worlds). Never point the home page at the press kit's JPGs.
 
 Keep the sources committed (they are the masters), but never point `games.js` at
 them. If you add a game, run the optimiser and reference its output.
@@ -81,7 +104,8 @@ If you add a weight, check it is inside the declared range (`300 700` for Fredok
 
 ## Rule 3 — Every image gets `width`, `height`, and a loading strategy
 
-- Above the fold (the hero): `fetchpriority="high"`, no `loading="lazy"`, and a
+- Above the fold (the hero phones): no `loading="lazy"`. The centre phone is
+  the LCP element, so it alone gets `fetchpriority="high"` and a
   `<link rel="preload" as="image">`.
 - Everything else: `loading="lazy" decoding="async"`.
 - Always set `width` and `height` attributes, even when CSS resizes the image.
@@ -105,6 +129,17 @@ forces a synchronous reflow, on every frame of a touch drag.
 Prefer `IntersectionObserver` (scrollspy, reveal) and `ResizeObserver` (carousel
 re-measure) over scroll maths. They run off the main thread's critical path.
 
+Two things on the page run on a clock. Both stop when you can't see them:
+
+- **The launch countdown** ticks once a second, writes a digit only when it
+  changes, and stops entirely while the banner is off screen (an
+  IntersectionObserver starts and stops the interval).
+- **The worlds strip** is a CSS `transform` animation, paused off screen, on
+  hover, and by its Pause button (moving content must be stoppable, WCAG 2.2.2).
+
+The hero parallax caches the stage's rect on pointer-enter and resize, so a
+pointer move does no layout reads, and it writes in one rAF per frame.
+
 ## Rule 5 — Animate `transform` and `opacity`. Never `transition: all`
 
 `transition: all` animates layout properties you did not intend, and forces
@@ -115,8 +150,11 @@ Everything that moves lives in one block at the bottom of `styles.css`, inside
 yields a page with no leftover transitions at all. `tools/lint.py` verifies both
 halves of this.
 
-The only layout property we animate is the 9 px → 24 px carousel dot, on three
-elements, deliberately.
+The only layout property we animate is the 9 px → 24 px carousel dot, on a
+handful of elements, deliberately.
+
+With Reduce Motion on, there is no reveal, no parallax, no floating chips, and
+the worlds strip is a plain swipeable row.
 
 `backdrop-filter` on the sticky header re-blurs on every scroll frame. It is one
 small strip and worth it. Do not add a second one to anything that scrolls.
@@ -144,6 +182,11 @@ Two things a fresh Illustrator export will do to you, both caught by the lint:
    `y`, so the region's top edge slices off the top third of every letter. The
    tools rewrite such filters to `objectBoundingBox`, whose region follows the
    element it shadows.
+
+The footer is dark in both themes, so its logo does not need to follow the
+theme: it is `assets/logo-on-dark.svg`, a plain lazy `<img>`, and
+`sync-logo.py` generates it from the same master. A second inline copy would
+cost ~5 KB gzipped per page and duplicate every id.
 
 `assets/logo.svg` stays on disk as the outlined, repaired master — it is what the
 JSON-LD `logo` points at and what you hand to press. Your untouched original is
@@ -194,5 +237,5 @@ python3 tools/lint.py        # structure
 ```
 
 Then, on the deployed URL, run Lighthouse in Chrome DevTools (mobile preset).
-Watch three numbers: **LCP** (the hero image), **CLS** (must be 0 — every image
+Watch three numbers: **LCP** (the centre hero phone), **CLS** (must be 0 — every image
 has explicit dimensions), and **TBT** (there is almost no JS on the main thread).
