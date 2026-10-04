@@ -375,6 +375,18 @@ h3 { font-size: clamp(1.4rem, 2.6vw, 2rem); }
   padding: 9px var(--gutter);
 }
 .announce a { color: var(--on-art); font-weight: 600; text-underline-offset: 3px; }
+.announce__sep {
+  display: inline-block;
+  width: 1px; height: 0.9em;
+  margin: 0 14px;
+  background: var(--glass-line);
+  vertical-align: -1px;
+}
+/* Narrow screens: only the first (newest) item, so the bar stays short. */
+@media (max-width: 699px) {
+  .announce__sep,
+  .announce__sep + .announce__item { display: none; }
+}
 .announce__dot {
   display: inline-block;
   width: 7px; height: 7px;
@@ -728,6 +740,63 @@ h3 { font-size: clamp(1.4rem, 2.6vw, 2rem); }
   .float-chip--2 { right: -1%; top: 26px; }
 }
 
+/* ---------- Just launched (filled by main.js) ---------- */
+.spotlight-wrap { padding-top: 16px; }
+.spotlight {
+  --c: var(--berry);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  gap: 8px;
+  padding: 26px 22px 0;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  background:
+    radial-gradient(80% 120% at 100% 0%, color-mix(in srgb, var(--c) 30%, transparent), transparent 62%),
+    linear-gradient(135deg, color-mix(in srgb, var(--c) 12%, var(--card)), var(--card) 65%);
+  box-shadow: inset 0 0 0 1px var(--line), var(--shadow-md);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 40%, var(--line)), var(--shadow-md);
+}
+.spotlight__head { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+.spotlight__head .gcard__icon { width: 72px; height: 72px; border-radius: 18px; flex: none; }
+.spotlight h2 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); }
+.spotlight .game__one { margin-top: 4px; }
+.spotlight__desc { margin-top: 16px; max-width: 52ch; color: var(--muted); }
+.spotlight .gcard__tags { margin-top: 14px; }
+.spotlight__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; }
+
+/* Two phones peeking up from the bottom edge (clipped by the card). */
+.spotlight__art { position: relative; height: 220px; }
+.spotlight__phone {
+  position: absolute;
+  left: 50%;
+  bottom: -110px;
+  width: 150px;
+  aspect-ratio: var(--shot-ratio);
+  padding: 5px;
+  border-radius: 26px;
+  background: var(--phone-bezel);
+  box-shadow: inset 0 0 0 1.5px var(--phone-edge), var(--shadow-lg);
+  transform: rotate(-8deg);
+  margin-left: -158px;
+}
+.spotlight__phone + .spotlight__phone { margin-left: 8px; bottom: -80px; transform: rotate(6deg); }
+.spotlight__phone img { width: 100%; height: 100%; object-fit: cover; border-radius: 21px; }
+
+@media (min-width: 761px) {
+  .spotlight {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: center;
+    gap: 24px;
+    padding: 34px 40px;
+  }
+  /* stretch the art to the card's full height so the phones meet its edge */
+  .spotlight__art { align-self: stretch; height: auto; min-height: 280px; margin-block: -34px; }
+  .spotlight__phone { width: 164px; bottom: -84px; margin-left: -172px; }
+  .spotlight__phone + .spotlight__phone { bottom: -46px; margin-left: 8px; }
+}
+
 /* ---------- Featured launch ---------- */
 .feature { padding-top: 24px; }
 
@@ -998,6 +1067,8 @@ noscript .gcard { margin-bottom: 22px; }
 }
 .tag--soon { background: var(--paper-2); color: var(--muted); }
 .tag--out { background: var(--tag-out-bg); color: var(--tag-out-fg); }
+.tag--new { background: var(--new-bg); color: var(--new-fg); }
+.tag--new::before { display: none; }
 .tag--date {
   background: var(--paper-2);
   color: var(--accent-strong);
@@ -1486,6 +1557,11 @@ noscript .gcard { margin-bottom: 22px; }
   .marquee.is-paused .marquee__track { animation-play-state: paused; }
   .world img { transition: transform var(--dur-3) var(--ease); }
   .world:hover img { transform: scale(1.06); }
+
+  /* just launched */
+  .spotlight__phone { transition: transform 450ms var(--ease); }
+  .spotlight:hover .spotlight__phone { transform: rotate(-5deg) translateY(-14px); }
+  .spotlight:hover .spotlight__phone + .spotlight__phone { transform: rotate(4deg) translateY(-22px); }
 
   /* games */
   .filters button { transition: background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease); }

@@ -5,7 +5,8 @@
      3) sticky-header state + back-to-top  (ONE rAF-throttled listener)
      4) in-page scrollspy
      5) scroll reveal
-     6) footer game links + launch bar, from window.GAMES (every page)
+     6) footer game links, launch bar and the "Just launched" card,
+        all from window.GAMES
      7) featured launch: countdown, store slots, worlds strip, trailer
      8) hero parallax
      9) renders window.GAMES into #games-list: filterable cards, and a
@@ -90,11 +91,13 @@
   var MONTHS = ["January", "February", "March", "April", "May", "June", "July",
     "August", "September", "October", "November", "December"];
 
-  /** Local midnight of `releaseDate`, or 0 when the game has none. */
-  function launchAt(game) {
-    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(game.releaseDate || "");
+  /** Local midnight of a "YYYY-MM-DD" string, or 0. */
+  function dayStart(value) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
     return m ? new Date(+m[1], +m[2] - 1, +m[3]).getTime() : 0;
   }
+  /** Local midnight of `releaseDate`, or 0 when the game has none. */
+  function launchAt(game) { return dayStart(game.releaseDate); }
   function isReleased(game) { return Date.now() >= launchAt(game); }
   function longDate(game) {
     var d = new Date(launchAt(game));
@@ -118,6 +121,31 @@
     for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id) return GAMES[i];
     return null;
   }
+
+  /* "Just launched": a live game, for 30 days from launchedOn (or releaseDate). */
+  var NEW_FOR = 30 * 864e5;
+  function liveSince(game) { return dayStart(game.launchedOn) || launchAt(game); }
+  function isNew(game) {
+    var t = liveSince(game);
+    return Boolean(t) && status(game).key === "out" && Date.now() < t + NEW_FOR;
+  }
+
+  /** The newest just-launched game, skipping the one the featured banner
+      already shows (it announces its own launch). */
+  function justLaunched() {
+    var box = document.querySelector("[data-featured]");
+    var featured = box ? box.getAttribute("data-featured") : "";
+    return GAMES.filter(function (g) { return isNew(g) && g.id !== featured; })
+      .sort(function (a, b) { return liveSince(b) - liveSince(a); })[0] || null;
+  }
+
+  /** The next game with a release date still ahead. */
+  function nextUp() {
+    return GAMES.filter(function (g) { return launchAt(g) && !isReleased(g); })
+      .sort(function (a, b) { return launchAt(a) - launchAt(b); })[0] || null;
+  }
+
+  function shortTitle(game) { return game.title.split(":")[0]; }
 
   var STORES = [
     { key: "ios", name: "App Store", badge: "assets/appstore.svg", alt: "Download on the App Store", w: 144, h: 48 },
@@ -355,25 +383,40 @@
     });
   })();
 
+  /* Up to two items: what just launched, then what launches next. Narrow
+     screens show only the first (CSS), so the bar stays one or two lines. */
   (function announce() {
     var bar = document.getElementById("announce");
     if (!bar) return;
-    var MONTH = 30 * 864e5;
-    var game = GAMES.filter(function (g) {
-      var t = launchAt(g);
-      return t && Date.now() < t + MONTH;   // upcoming, or launched within a month
-    })[0];
-    if (!game) return;
+    var items = [];
 
-    var out = isReleased(game);
-    bar.replaceChildren(
-      el("span", { class: "announce__dot", "aria-hidden": "true" }),
-      out ? "New: " : "New game: ",
-      el("strong", { text: game.title }),
-      out ? " is out now · " : " launches " + longDate(game) + " · ",
-      el("a", { href: "#" + (document.getElementById(game.id) ? game.id : "game-" + game.id),
-                text: out ? "Get it now" : "See what's coming" })
-    );
+    var fresh = justLaunched();
+    if (fresh) {
+      items.push(el("span", { class: "announce__item" }, [
+        "New: ", el("strong", { text: shortTitle(fresh) }), " is out now · ",
+        el("a", { href: document.getElementById("just-launched") ? "#just-launched" : "#game-" + fresh.id, text: "Get it now" })
+      ]));
+    }
+
+    // Upcoming, or launched within the month (the featured banner's game).
+    var soon = nextUp() || GAMES.filter(function (g) { return launchAt(g) && isNew(g); })[0];
+    if (soon) {
+      var out = isReleased(soon);
+      var anchor = document.getElementById(soon.id) ? soon.id : "game-" + soon.id;
+      items.push(el("span", { class: "announce__item" }, [
+        out ? "New: " : (fresh ? "" : "New game: "), el("strong", { text: shortTitle(soon) }),
+        out ? " is out now · " : " launches " + longDate(soon) + " · ",
+        el("a", { href: "#" + anchor, text: out ? "Get it now" : "See what's coming" })
+      ]));
+    }
+    if (!items.length) return;
+
+    var kids = [el("span", { class: "announce__dot", "aria-hidden": "true" })];
+    items.forEach(function (item, i) {
+      if (i) kids.push(el("span", { class: "announce__sep", "aria-hidden": "true" }));
+      kids.push(item);
+    });
+    bar.replaceChildren.apply(bar, kids);
     bar.hidden = false;
   })();
 
@@ -818,7 +861,10 @@
     }
 
     var text = el("div", { class: "gcard__text" }, [
-      el("div", { class: "gcard__top" }, [gameIcon(game), pill(game)]),
+      el("div", { class: "gcard__top" }, [
+        gameIcon(game), pill(game),
+        isNew(game) ? el("span", { class: "tag tag--new", text: "New" }) : null
+      ]),
       el("h3", { id: titleId, text: game.title }),
       el("p", { class: "game__one", text: game.oneLiner || "" }),
       (game.tags || []).length ? el("ul", { class: "gcard__tags" }, game.tags.map(function (t) {
@@ -849,6 +895,51 @@
   GAMES.forEach(function (game) { frag.appendChild(card(game)); });
   mount.appendChild(frag);
   observeReveal(mount);
+
+  /* "Just launched" card: shown for 30 days after a game goes live, then the
+     section simply stays hidden. Text is the game's own data, nothing new. */
+  (function spotlight() {
+    var section = document.getElementById("just-launched");
+    var box = section && section.querySelector(".spotlight");
+    var game = justLaunched();
+    if (!box || !game) return;
+
+    var shots = (game.screenshots || []).slice(0, 2);
+    var desc = /^.*?[.!?](\s|$)/.exec(game.description || "");
+    var actions = el("div", { class: "spotlight__actions" }, [stores(game)]);
+    if (sheet) {
+      var more = el("button", { type: "button", class: "more", "aria-haspopup": "dialog" }, [
+        "Details", el("span", { class: "sr-only", text: " about " + game.title }), icon(ICON_ARROW)
+      ]);
+      more.addEventListener("click", function () { sheet(game, more); });
+      actions.appendChild(more);
+    }
+
+    if (game.color) box.style.setProperty("--c", game.color);
+    box.replaceChildren(
+      el("div", { class: "spotlight__text" }, [
+        el("span", { class: "tag tag--out", text: "Just launched" }),
+        el("div", { class: "spotlight__head" }, [
+          gameIcon(game),
+          el("div", null, [
+            el("h2", { id: "spotlight-title", text: shortTitle(game) + " is out now" }),
+            el("p", { class: "game__one", text: game.oneLiner || "" })
+          ])
+        ]),
+        desc ? el("p", { class: "spotlight__desc", text: desc[0].trim() }) : null,
+        (game.tags || []).length ? el("ul", { class: "gcard__tags" }, game.tags.map(function (t) {
+          return el("li", { text: t });
+        })) : null,
+        actions
+      ]),
+      el("div", { class: "spotlight__art", "aria-hidden": "true" }, shots.map(function (shot) {
+        return el("div", { class: "spotlight__phone" }, [
+          el("img", { src: shot.thumb || shot.src, alt: "", width: THUMB_W, height: THUMB_H, loading: "lazy", decoding: "async" })
+        ]);
+      }))
+    );
+    section.hidden = false;
+  })();
 
   /* Filter chips: counts derived from the data, so they can't go stale. */
   (function filters() {
