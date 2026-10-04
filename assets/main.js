@@ -108,8 +108,13 @@
     return d.getDate() + " " + MONTHS[d.getMonth()].slice(0, 3);
   }
 
-  /** A store link counts only once the game's release date has passed. */
-  function storeUrl(game, key) { return isReleased(game) ? safeUrl(game[key]) : ""; }
+  /** A store link counts only once the game's release date has passed, and
+      once that store's own liveFrom moment (if any) has passed. */
+  function storeUrl(game, key) {
+    var from = game.liveFrom && Date.parse(game.liveFrom[key]);
+    if (!isReleased(game) || (from && Date.now() < from)) return "";
+    return safeUrl(game[key]);
+  }
 
   function status(game) {
     if (storeUrl(game, "ios") || storeUrl(game, "android")) return { key: "out", cls: "tag--out", text: "Out now" };
