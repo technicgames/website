@@ -205,8 +205,7 @@ window.GAMES = [
       }
     ],
 
-    // Paste the store URLs here when the app is approved.
-    ios: "",
-    android: ""
+    ios: "https://apps.apple.com/us/app/ponder-logic-puzzle-game/id6816054434",
+    android: "https://play.google.com/store/apps/details?id=com.technicgames.Ponder"
   }
 ];
