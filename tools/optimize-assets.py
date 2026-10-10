@@ -43,8 +43,12 @@ A = os.path.join(ROOT, "assets")
 GAMES = [
     {
         "prefix": "fsm",
-        "icon": "fsm-icon.svg",
-        "screenshots": ["fsm-1.jpg", "fsm-2.jpg", "fsm-3.jpg"],
+        # The new jars-of-fruit icon and the iPhone 6.9" store screenshots
+        # (store set 01, 02, 03, 05, 07), from the game project's
+        # MarketingVideos/store_assets/out/.
+        "icon": "fsm/Icon.png",
+        "screenshots": ["fsm/Shot 1.png", "fsm/Shot 2.png", "fsm/Shot 3.png",
+                        "fsm/Shot 4.png", "fsm/Shot 5.png"],
     },
     {
         "prefix": "lbs",

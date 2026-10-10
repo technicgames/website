@@ -51,7 +51,7 @@ window.GAMES = [
     cardShot: 2,
 
     // Game logo / app icon. Square, 192px (2x of its 84px box).
-    // Generated from assets/fsm-icon.svg by tools/optimize-assets.py.
+    // Generated from assets/fsm/Icon.png by tools/optimize-assets.py.
     // Left decorative on purpose: the game title sits right next to it, so
     // a screen reader announcing both would just repeat itself. Set
     // `iconAlt` only if the icon carries meaning the title doesn't.
@@ -69,17 +69,27 @@ window.GAMES = [
       {
         thumb: "assets/fsm-1-thumb.webp",
         full: "assets/fsm-1-full.webp",
-        alt: "Fruit Sort N Merge gameplay: containers holding stacks of mixed fruit, waiting to be sorted."
+        alt: "Sort the jars, merge the fruit: a fruit lifted from one glass jar toward a matching fruit in another."
       },
       {
         thumb: "assets/fsm-2-thumb.webp",
         full: "assets/fsm-2-full.webp",
-        alt: "Two matching fruits combining into a single higher-tier fruit."
+        alt: "Chain merges make big combos: four merges in a row, with a 4x chain badge."
       },
       {
         thumb: "assets/fsm-3-thumb.webp",
         full: "assets/fsm-3-full.webp",
-        alt: "A completed level with every stack solved and one final fruit remaining."
+        alt: "Reach the golden pineapple: a new fruit unlocked, above the row of fruits from smallest to largest."
+      },
+      {
+        thumb: "assets/fsm-4-thumb.webp",
+        full: "assets/fsm-4-full.webp",
+        alt: "Mystery levels: jars of fruit hidden under question marks."
+      },
+      {
+        thumb: "assets/fsm-5-thumb.webp",
+        full: "assets/fsm-5-full.webp",
+        alt: "So satisfying: a solved level with \u201cAwesome\u201d and confetti."
       }
     ],
 
