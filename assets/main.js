@@ -157,9 +157,15 @@
     { key: "android", name: "Google Play", badge: "assets/googleplay.svg", alt: "Get it on Google Play", w: 161, h: 48 }
   ];
 
+  /** The link a store badge uses: the live one, or for a game with earlyLinks
+      the pre-order or soft-launch page before its release date. */
+  function badgeUrl(game, key) {
+    return storeUrl(game, key) || (game.earlyLinks ? safeUrl(game[key]) : "");
+  }
+
   /** One platform, rendered independently of the other. */
   function storeSlot(store, game) {
-    var url = storeUrl(game, store.key);
+    var url = badgeUrl(game, store.key);
 
     if (!url) {
       // Non-interactive, badge-shaped. Reads as "Coming soon, App Store".
@@ -854,7 +860,7 @@
     var hero = shots[(game.cardShot || 1) - 1] || shots[0];
 
     var actions = el("div", { class: "gcard__actions" });
-    if (s.key === "out") actions.appendChild(stores(game));
+    if (s.key === "out" || game.earlyLinks) actions.appendChild(stores(game));
     if (sheet) {
       var more = el("button", { type: "button", class: "more", "aria-haspopup": "dialog" }, [
         "Details",

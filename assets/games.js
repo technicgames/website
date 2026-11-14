@@ -28,6 +28,9 @@
                   top, a line in the launch bar and a "New" badge on its card.
                   All three disappear by themselves. Hides nothing.
                   (A game with a releaseDate gets the same, from that date.)
+     earlyLinks   true shows the store badges before releaseDate, for a game on
+                  pre-order or in a soft launch. The status pill and the
+                  countdown still follow releaseDate.
      liveFrom     { ios: "2026-10-04T20:00:00+05:30" } holds ONE store's badge
                   until an exact moment (the +05:30 makes it 8 PM India time
                   for every visitor, wherever they are). A "Coming soon" chip
@@ -104,6 +107,9 @@ window.GAMES = [
     tags: ["500+ puzzles", "10 worlds", "28 characters"],
     cardShot: 4,
     releaseDate: "2026-11-16",
+    // Out in Canada, Australia and New Zealand since 2 Nov, and on pre-order
+    // (App Store) or pre-registration (Google Play) everywhere else.
+    earlyLinks: true,
 
     // Masters live in the press kit (pushlings-press/images/); these are the
     // derivatives tools/optimize-assets.py writes from them.
@@ -141,8 +147,7 @@ window.GAMES = [
       }
     ],
 
-    // Already filled in: they stay hidden until releaseDate (see the header).
-    ios: "https://apps.apple.com/app/id6817405644",
+    ios: "https://apps.apple.com/us/app/pushlings-logic-puzzle-game/id6817405644",
     android: "https://play.google.com/store/apps/details?id=com.technicgames.pushlings"
   },
   {
