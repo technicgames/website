@@ -27,7 +27,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Technic Games">
 <meta property="og:title" content="Technic Games">
-<meta property="og:description" content="Relaxing mobile puzzle games for iOS &amp; Android. Now playing: Fruit Sort N Merge and Ponder. Coming 16 November 2026: Pushlings.">
+<meta property="og:description" content="Relaxing mobile puzzle games for iOS &amp; Android. Now playing: Fruit Sort N Merge, Ponder and Pushlings.">
 <meta property="og:image" content="https://technicgames.com/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -36,7 +36,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Technic Games">
-<meta name="twitter:description" content="Relaxing mobile puzzle games for iOS &amp; Android. Now playing: Fruit Sort N Merge and Ponder. Coming 16 November 2026: Pushlings.">
+<meta name="twitter:description" content="Relaxing mobile puzzle games for iOS &amp; Android. Now playing: Fruit Sort N Merge, Ponder and Pushlings.">
 <meta name="twitter:image" content="https://technicgames.com/assets/og-image.png">
 <meta name="twitter:image:alt" content="Technic Games — relaxing mobile puzzle games for iOS and Android.">
 
@@ -207,7 +207,7 @@
         </div>
         <div class="float-chip float-chip--2">
           <img src="assets/pl-icon.webp" alt="" width="38" height="38" decoding="async">
-          <div><b>Pushlings</b><span data-status-of="pushlings">Arrives 16 Nov</span></div>
+          <div><b>Pushlings</b><span class="is-live" data-status-of="pushlings">Out now</span></div>
         </div>
       </div>
     </div>
@@ -236,7 +236,7 @@
                width="1920" height="1080" loading="lazy" decoding="async">
         </div>
         <div class="billboard__body">
-          <p class="eyebrow" data-eyebrow>New game · Coming soon</p>
+          <p class="eyebrow" data-eyebrow>New game · Out now</p>
           <h2 id="pushlings-title"><img class="billboard__logo" src="assets/pl-logo-white.webp" alt="Pushlings" width="900" height="108" loading="lazy" decoding="async"></h2>
           <p class="billboard__lede">A cozy logic puzzle game where the rules move.</p>
           <ul class="facts" aria-label="At a glance">
@@ -246,7 +246,8 @@
             <li>Plays offline</li>
           </ul>
 
-          <div class="countdown" data-countdown>
+          <!-- Shown by main.js only before a release date; Pushlings is out, so it starts hidden. -->
+          <div class="countdown" data-countdown hidden>
             <p class="countdown__label">Launches worldwide <b>16 November 2026</b></p>
             <div class="countdown__grid" aria-hidden="true">
               <div class="countdown__cell"><span class="countdown__num" data-cd="d">–</span><span class="countdown__unit">Days</span></div>
@@ -254,7 +255,7 @@
               <div class="countdown__cell"><span class="countdown__num" data-cd="m">–</span><span class="countdown__unit">Mins</span></div>
               <div class="countdown__cell"><span class="countdown__num" data-cd="s">–</span><span class="countdown__unit">Secs</span></div>
             </div>
-            <p class="countdown__note">Out now in Canada, Australia and New Zealand. Everywhere else, pre-order on the App Store or pre-register on Google Play.</p>
+            <p class="countdown__note">Out now on iPhone and Android.</p>
           </div>
 
           <div class="billboard__cta">
@@ -262,10 +263,10 @@
               <span class="btn__play" aria-hidden="true"><svg viewBox="0 0 10 12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg></span>
               Watch trailer
             </a>
-            <!-- Replaced by main.js with live badges once the release date passes. -->
+            <!-- main.js redraws these from games.js; this copy is for visitors and crawlers without JavaScript. -->
             <div class="stores" data-stores>
-              <span class="chip"><span class="chip__dot" aria-hidden="true"></span><span class="chip__text"><span class="chip__kicker">Coming soon</span><span class="chip__name">App Store</span></span></span>
-              <span class="chip"><span class="chip__dot" aria-hidden="true"></span><span class="chip__text"><span class="chip__kicker">Coming soon</span><span class="chip__name">Google Play</span></span></span>
+              <a class="badge" href="https://apps.apple.com/us/app/pushlings-logic-puzzle-game/id6817405644" target="_blank" rel="noopener"><img src="assets/appstore.svg" alt="Download on the App Store" width="144" height="48" loading="lazy" decoding="async"></a>
+              <a class="badge" href="https://play.google.com/store/apps/details?id=com.technicgames.pushlings" target="_blank" rel="noopener"><img src="assets/googleplay.svg" alt="Get it on Google Play" width="161" height="48" loading="lazy" decoding="async"></a>
             </div>
           </div>
           <p class="billboard__press">Press? <a href="pushlings-press/">Get the press kit →</a></p>

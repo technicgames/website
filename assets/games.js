@@ -106,10 +106,9 @@ window.GAMES = [
     color: "#4a4fc0",
     tags: ["500+ puzzles", "10 worlds", "28 characters"],
     cardShot: 4,
+    // Out worldwide on 16 Nov 2026, after a soft launch in Canada, Australia and
+    // New Zealand from 2 Nov. The date also drives the 30-day "Just launched" news.
     releaseDate: "2026-11-16",
-    // Out in Canada, Australia and New Zealand since 2 Nov, and on pre-order
-    // (App Store) or pre-registration (Google Play) everywhere else.
-    earlyLinks: true,
 
     // Masters live in the press kit (pushlings-press/images/); these are the
     // derivatives tools/optimize-assets.py writes from them.
