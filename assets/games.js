@@ -161,11 +161,11 @@ window.GAMES = [
     icon: "assets/lbs-icon.webp",
 
     description:
-      "A tidy slide puzzle where one swipe moves every block at once. Blocks are solid, so they stop against walls and each other — and each one latches into the target that matches its color and symbol. Fill every target to clear the level, and solve it in fewer moves to earn all three stars.",
+      "A tidy slide puzzle where one swipe moves every block at once. Blocks are solid, so they stop against walls and each other — and each one latches into the home that matches its color. Fill every home to clear the level, and solve it in fewer swipes to earn all three stars.",
     features: [
       "Swipe once and every block slides together",
       "252 levels across 18 chapters, from gentle to hard",
-      "Arrows, freeze tiles and push blocks add new twists",
+      "Freeze tiles, arrows, portals, push blocks and color gates add new twists",
       "Undo and hints when you're stuck",
       "Clean, colorful, and free to play"
     ],
@@ -173,23 +173,34 @@ window.GAMES = [
       {
         thumb: "assets/lbs-1-thumb.webp",
         full: "assets/lbs-1-full.webp",
-        alt: "Latch gameplay: a green X block and a yellow O block sliding toward the targets that match them."
+        alt: "One swipe moves every block: a swipe down on Level 85 slides the yellow and green blocks at once, past the portals."
       },
       {
         thumb: "assets/lbs-2-thumb.webp",
         full: "assets/lbs-2-full.webp",
-        alt: "A Hard level with yellow, green, pink and blue blocks on a walled board, each block marked with its own symbol."
+        alt: "Slide every block into its home: the last swipe of Level 85, with the green block latching into its home."
       },
       {
         thumb: "assets/lbs-3-thumb.webp",
         full: "assets/lbs-3-full.webp",
-        alt: "Level 150: pink, yellow and green blocks threading between walls toward their matching targets."
+        alt: "Freeze tiles stop a block dead: a snowflake tile on the board in Level 29."
+      },
+      {
+        thumb: "assets/lbs-4-thumb.webp",
+        full: "assets/lbs-4-full.webp",
+        alt: "Portals send a block across the board: a block coming out of the second portal in Level 85."
+      },
+      {
+        thumb: "assets/lbs-5-thumb.webp",
+        full: "assets/lbs-5-full.webp",
+        alt: "Unlock new blocks and board themes: the Themes screen with the Meadow, Beacon, Carnival, Reef, Meridian and Velvet block sets."
       }
     ],
 
-    // Paste the store URLs here when the app is approved.
+    // Out on Google Play. The App Store version is in review: paste its URL into
+    // `ios` once it's approved and the App Store badge replaces the chip.
     ios: "",
-    android: ""
+    android: "https://play.google.com/store/apps/details?id=com.technicgames.Latch"
   },
   {
     id: "ponder-logic-puzzle",

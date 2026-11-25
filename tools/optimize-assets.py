@@ -52,9 +52,11 @@ GAMES = [
     },
     {
         "prefix": "lbs",
+        # The current app icon and the iPhone 6.9" store screenshots (store set 01, 02, 06, 05,
+        # 10), from the game project's Marketing/Store Screenshots/AppStore/.
         "icon": "lbs/Icon.png",
-        # Artboards 4-6 are extra marketing shots; games.js shows only three.
-        "screenshots": ["lbs/Artboard 1.png", "lbs/Artboard 2.jpg", "lbs/Artboard 3.jpg"],
+        "screenshots": ["lbs/Shot 1.png", "lbs/Shot 2.png", "lbs/Shot 3.png",
+                        "lbs/Shot 4.png", "lbs/Shot 5.png"],
     },
     {
         "prefix": "pnd",
